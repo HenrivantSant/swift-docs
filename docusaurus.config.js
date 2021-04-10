@@ -2,12 +2,12 @@
 module.exports = {
     title: 'Swift',
     tagline: 'Swiftly build any API',
-    url: 'https://henrivantsant.github.io/swift/',
+    url: 'https://henrivantsant.github.io',
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
-    organizationName: 'facebook', // Usually your GitHub org/user name.
+    organizationName: 'swift', // Usually your GitHub org/user name.
     projectName: 'swift', // Usually your repo name.
     themeConfig: {
         navbar: {

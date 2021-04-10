@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[22],{91:function(o){o.exports=JSON.parse('{"allTagsPath":"/swift-docs/blog/tags","slug":"facebook","name":"facebook","count":1,"permalink":"/swift-docs/blog/tags/facebook"}')}}]);

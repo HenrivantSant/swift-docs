@@ -3,7 +3,7 @@ module.exports = {
     title: 'Swift',
     tagline: 'Swiftly build any API',
     url: 'https://henrivantsant.github.io',
-    baseUrl: '/',
+    baseUrl: '/swift-docs/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',

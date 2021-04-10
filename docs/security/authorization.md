@@ -266,4 +266,3 @@ public function me( array $params ): JsonResponse {
 }
 ```
 
-&larr; [Logging](https://github.com/HenrivantSant/henri/blob/master/Docs/Logging.md#logging) | [Users](https://github.com/HenrivantSant/henri/blob/master/Docs/Users.md#users) &rarr;

@@ -36,7 +36,7 @@ function FooterLink({to, href, label, prependBaseUrlToHref, ...props}: any) {
 
 const FooterLogo = ({
   sources,
-  alt,
+  alt, // @ts-ignore
 }: Pick<ThemedImageProps, 'sources' | 'alt'>) => (
   <ThemedImage className="footer__logo" alt={alt} sources={sources} />
 );

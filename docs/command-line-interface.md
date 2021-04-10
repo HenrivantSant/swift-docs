@@ -5,13 +5,17 @@ title: Command line interface
 The command line presents a clean implementation of the [Symfony Command Line](https://symfony.com/doc/current/components/console.html). See their documentation on how to use the command line general.
 
 ## Setup
-It's requires a small setup to get to command line running.
+It's requires a small setup to get to command line running. If you set up using the swift-starter template this is already in place.
 1. Create a folder 'bin' in your project root
 2. Create a file (without extension) named 'console' with the content from below
 ```php
 #!/usr/bin/env php
 <?php
-require_once 'vendor/autoload.php';
+if (!defined('INCLUDE_DIR')) {
+    define('INCLUDE_DIR', dirname(__DIR__, 1));
+}
+
+require INCLUDE_DIR . '/vendor/autoload.php';
 
 use Swift\Console\CLIApplication;
 

@@ -282,4 +282,3 @@ A Controller is by default already provided with the Security class through `$th
 
 There is no shortcut for the Passport as this is mainly relevant during Authentication before a token has been granted.
 
-&larr; [Logging](https://github.com/HenrivantSant/henri/blob/master/Docs/Logging.md#logging) | [Users](https://github.com/HenrivantSant/henri/blob/master/Docs/Users.md#users) &rarr;

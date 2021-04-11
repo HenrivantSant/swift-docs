@@ -5,7 +5,7 @@ title: Authentication
 Authentication represents the process where users or clients confirm they're identity with the application. The authentication process follows a certain number of steps to finally generate a Token. This token represents the access the current user or client has. 
 
 ## Authentication process
-Authentication is handled by 'Authenticators'. Implementing the `Swift\Security\Authentication\Authenticator\AuthenticatorInterface`. Take a look a REST User Authenticator for example:
+Authentication is handled by 'Authenticators'. Implementing the [`Swift\Security\Authentication\Authenticator\AuthenticatorInterface`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Authenticator/AuthenticatorInterface.php). Take a look a REST User Authenticator for example:
 
 A very important note is that the authentication process takes place before actually executing the Request a Controller. By the time a Controller method gets called Authentication has already finished. Authentication therefore NEVER takes place in a Controller. A controller however can still define Authentication Endpoints and return it's reponse. More  on this later.
 
@@ -135,11 +135,11 @@ final class UserAuthenticator implements AuthenticatorInterface, AuthenticatorEn
 The authentication process is directed by an Authentication Manager. This manager checks all Authenticators whether the 'support' the given request. Once a Authenticator claims it support the Request, this Authenticator will be executed. No other Authenticator will be searched for nor authenticated against.
 
 ### Passport
-Once the authenticator claims to support the request (for example credentials have been found in the header) the Authentication Manager will call the authenticate method which is supposed to return a Passport representing the User or Client trying to authentication. This can be the default `Swift\Security\Authentication\Passport\Passport` or any class implementing the `Swift\Security\Authentication\Passport\PassportInterface`. This passport contains the User (implementation of `Swift\Security\User\UserInterface
-`) that is found based on the Request and should contain and instance of `Swift\Security\Authentication\Passport\Credentials\CredentialsInterface`. The Passport calls `validateCredentials` on this credentials to validate whether the provided credentials in the Request match the ones belonging the User on the Passport. 
+Once the authenticator claims to support the request (for example credentials have been found in the header) the Authentication Manager will call the authenticate method which is supposed to return a Passport representing the User or Client trying to authentication. This can be the default [`Swift\Security\Authentication\Passport\Passport`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Passport/Passport.php) or any class implementing the [`Swift\Security\Authentication\Passport\PassportInterface`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Passport/PassportInterface.php). This passport contains the User (implementation of [`Swift\Security\User\UserInterface
+`](https://github.com/HenrivantSant/swift/blob/master/src/Security/User/UserInterface.php)) that is found based on the Request and should contain and instance of [`Swift\Security\Authentication\Passport\Credentials\CredentialsInterface`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Passport/Credentials/CredentialsInterface.php). The Passport calls `validateCredentials()` on this credentials to validate whether the provided credentials in the Request match the ones belonging the User on the Passport. 
 
 #### Stamps
-A Passport can be enriched with Stamps (`Swift\Security\Authentication\Passport\Stamp\StampInterface`). This could for example tell that Authentication is already okay in case of a valid Bearer token. Take a look a AccessTokenAuthenticator::authenticate() for example:
+A Passport can be enriched with Stamps [`Swift\Security\Authentication\Passport\Stamp\StampInterface`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Passport/Stamp/StampInterface.php). This could for example tell that Authentication is already okay in case of a valid Bearer token. Take a look a `AccessTokenAuthenticator::authenticate()` for example:
 ```php
 /**
  * @inheritDoc

@@ -10,12 +10,8 @@ It's requires a small setup to get to command line running. If you set up using 
 2. Create a file (without extension) named 'console' with the content from below
 ```php
 #!/usr/bin/env php
-<?php
-if (!defined('INCLUDE_DIR')) {
-    define('INCLUDE_DIR', dirname(__DIR__, 1));
-}
-
-require INCLUDE_DIR . '/vendor/autoload.php';
+<?php declare(strict_types=1);
+require dirname(__DIR__, 1) . '/vendor/autoload.php';
 
 use Swift\Console\CLIApplication;
 

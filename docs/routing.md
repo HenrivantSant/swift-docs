@@ -3,7 +3,7 @@ title: Routing & Controllers
 ---
 
 When your application receives a request, it calls a controller action (method on a controller) to generate the response. The routing configuration defines which action to run for each incoming URL. It also provides other useful features, like generating SEO-friendly URLs (e.g. /read/intro-to-swift instead of index.php?article_id=57).
-### Controllers
+## Controllers
 Controllers are classes in which available routes are defined and in which actions based on the route will be executed. Controllers must be created in the app directory in your app. For example 'app/Foo/Controller/' and should extend 'Swift\Controller\AbstractController'. This way the Router will know this is a controller class and map the routes.
 
 ```php
@@ -78,7 +78,7 @@ But what if you want a variable like an id? More on the specifics of building th
 
 NOTE: Multiple types can be exposed for a given route. Also the same route can lead to different methods on the controller based on the Method used to make the request. The class route must allow for all HTTP Methods used in the definitions within. Type HTTP methods in writing (uppercase) or simple refer using the `Swift\Router\Types\RouteMethodEnum` as in the example above. 
 
-### Route annotation
+## Route annotation
 The Router will 'harvest' all methods in the controllers classes with a `#[Route]` attribute, and map those as routes. If a route annotation is used on the class (highly recommended) this will be used as a prefix for all methods in this specific controller as explained in the example above.
 
 The attributes come with the following settings:
@@ -112,7 +112,7 @@ This means you could have the same route for different HTTP Methods if you would
     }
 ```
 
-#### Variables in urls
+### Variables in urls
 Note: This principle is fork of [AltoRouter](https://github.com/dannyvankooten/AltoRouter).
 As you can see in the previous example there some weird syntax going on in the route parameter in the attribute. This a route 'variable' with the name 'article_id'. Each route can have multiple variables which allows for the url to be for (like in this example) '/bar/123'.
 
@@ -143,7 +143,7 @@ Each of those variable types results in a regex
 ```
 It is possible to register your custom variable types to router if you wish to match a specific pattern. More on this in the chapter 'Hooking in to the router'.
 
-#### Reading url variables
+### Reading url variables
 Okay so we can use several variables, convenient! How to read this? Easy! The variables which be passed into your function as an array. See the example below.
 ```php
     /**
@@ -163,14 +163,14 @@ Okay so we can use several variables, convenient! How to read this? Easy! The va
         ));
     }
 ```
-See how the variable name comes in to play now?
+See how the variable name comes in to play now? See [`Swift\Router\RouteParameter`](https://github.com/HenrivantSant/swift/blob/master/src/Router/RouteParameter.php)
 
-### Reponses
-A controller action must always return a `Swift\HTTPFoundation\ResponseInterface` instance. This will output the given payload as JSON. You can easily add different Responses as long as they extend from `Swift\HTTPFoundation\Response`, or make one from scratch. As long as implements the inferface all is good. There some defaults at your disposal:
-- ``Swift\HttpFoundation\Response``
-- ``Swift\HttpFoundation\JsonResponse``
-- ``Swift\HttpFoundation\RedirectResponse``
-- ``Swift\HttpFoundation\BinaryFileResponse``
+## Responses
+A controller action must always return a [`Swift\HTTPFoundation\ResponseInterface`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/ResponseInterface.php) instance. This will output the given payload as JSON. You can easily add different Responses as long as they extend from `Swift\HTTPFoundation\Response`, or make one from scratch. As long as implements the inferface all is good. There some defaults at your disposal:
+- [`Swift\HttpFoundation\Response`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/Response.php)
+- [`Swift\HttpFoundation\JsonResponse`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/JsonResponse.php)
+- [`Swift\HttpFoundation\RedirectResponse`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/RedirectResponse.php)
+- [`Swift\HttpFoundation\BinaryFileResponse`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/BinaryFileResponse.php)
 
 The above controller called with 'foo/bar/3' with HTTP GET would return:
 ```json
@@ -205,6 +205,11 @@ Without message:
 }
 ```  
 
-### Hooking in to the router (Route Events)
-#### Register your own variable types
-#### Adding/modifying routes
+## Hooking in to the router (Route Events)
+TODO
+
+### Register your own variable types
+TODO
+
+### Adding/modifying routes
+TODO

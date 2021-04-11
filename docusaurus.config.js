@@ -26,7 +26,7 @@ module.exports = {
                 {to: 'blog', label: 'Blog', position: 'left'},
                 {to: 'next', label: 'Next', position: 'left'},
                 {
-                    href: 'https://github.com/facebook/docusaurus',
+                    href: 'https://github.com/HenrivantSant/swift',
                     label: 'GitHub',
                     position: 'right',
                 },

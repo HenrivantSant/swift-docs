@@ -3,8 +3,10 @@ title: Events & Subscribers
 ---
 
 Under the hood the [Symfony Event Dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html) is used, however there is a custom implementation on the Event Dispatcher. This is in order to provide future stability and to enable the system for adding functionality in to the event system.
-### Default system events
-### How to subscribe to events
+## Default system events
+TODO
+
+## How to subscribe to events
 When you want to do something when a given event occurs (like logging, or for example add a Route variable_type) you can subscribe to those event using a EventSubscriber instance. In contrary to Symfony, in this system Event Subscriber do support Dependency Injection. It is recommend to only use subscribers to 'catch' the event and use a service to execute the actual logic (and if applicable apply the result to the event). Pretty the same as you would do in a Controller or a command. This makes the logic in the service resuable for different occasions and keeps the subscriber clean.
 
 ```php
@@ -67,7 +69,7 @@ final class FooSubscriber implements EventSubscriberInterface {
 
 }
 ```
-### How to create your own events
+## How to create your own events
 Events are classes which can be dispatched using the EventDispatcher. You can easily create your own like the example.
 ```php
 namespace Foo\Event;
@@ -107,7 +109,7 @@ class OnBeforeFooEvent extends Event {
 }
 ```
 
-### Dispatch events
+## Dispatch events
 Events are dispatched using the EventDispatcher. You will need to inject the EventDispatcher (`Henri\Framework\Events\EventDispatcher`) into your class. Below an example of how the Router uses an event to provide all found routes and match types, allows for all subscribers to modify those and reassign them before actually matching the routes.
 ```php
 /**

@@ -6,10 +6,11 @@ title: Installation
 The easiest way is to kickoff with the starter template (https://github.com/HenrivantSant/swift-starter).
 
 ### Install
-Create a project and pass the of your project.
+Create a project and pass the of your project. Run the command below and change project_name to the name of your project.
 ```shell
 composer create-project henrivantsant/swift-starter project_name
 ```
+After running a new directory is created. Type `cd project_name` in your terminal (your project's name) to enter the project. This is necessary for the next step.
 
 ### Init database
 Make sure to fill out login detail to a database in /etc/config/database.yaml.
@@ -23,7 +24,7 @@ connection:
     port: 3306
     prefix: prefix_
 ```
-Init the database by running
+Init the database by running in your terminal from the root of the project.
 ```shell
 php bin/console database:entities:update
 ```

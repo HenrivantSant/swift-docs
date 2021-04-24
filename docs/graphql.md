@@ -433,12 +433,7 @@ public function users( #[Argument(type: ArgumentsType::class, generator: EntityA
     unset($filter['where']);
     $argumentsType = new ArgumentsType(...$filter);
 
-    if (!$result = $this->userDatabaseStorage->findMany($state, $argumentsType->toArgument())) {
-        return new UserConnection($result);
-    }
-
-
-    return new UserConnection($result);
+    return new UserConnection($this->userDatabaseStorage->findMany($state, $argumentsType->toArgument()));
 }
 ```
 ```php

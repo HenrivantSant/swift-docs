@@ -2,10 +2,10 @@
 title: Dependency Injection
 ---
 
-DI is in the core of the system. It requires barely any configuration. Under the hood [Symfony Dependency Injection](https://symfony.com/doc/current/components/dependency_injection.html) is used to provide this. See the Symfony documentation for more detailed information on the specifics of DI.
+DI is in the core of the system. It requires hardly any configuration. Under the hood [Symfony Dependency Injection](https://symfony.com/doc/current/components/dependency_injection.html) is used. See the Symfony documentation for more detailed information on the specifics of DI.
 ```yaml
 imports:
-  - { resource: vendor/henrivantsant/swift/services.yaml }
+  - { resource: vendor/swift-api/swift/src/services.yaml }
 
 services:
   _defaults:
@@ -19,6 +19,9 @@ services:
 This will tell the DI component to enable DI for all files in the app/Foo directory. In the top of the file the framework configuration for DI is included. Make sure to put this services.yaml file in the root of your project. Feel free to split your services.yaml in different files if it grows too big. This can easily be done by using a import statement to the additional services.yaml file, just like framework services.yaml is imported.
 
 ## What is dependency injection
+We're not diving into the specifics of Dependency Injection here. For more on the subject check the [wiki](https://en.wikipedia.org/wiki/Dependency_injection).
+
+## Dependency Injection in Swift
 Injection usually happens in the constructor. Add the classes you wish to inject as arguments to the constructor and they will be automatically provided as an instance. How convenient! This is available through autowiring. 
 ```php
 declare(strict_types=1);
@@ -103,8 +106,48 @@ class FooService {
 }
 ```
 
+### Manually set class to autowire
+The example as below is more recommended. By specifically telling the container to autowire you will keep your code more predictable. Simple add to #[Swift\Kernel\Attributes\Autowire] attribute to the class as in the example below to autowire the class.
+```php
+declare(strict_types=1);
+
+namespace Foo\Service;
+
+use Swift\Configuration\ConfigurationInterface;
+use Swift\Kernel\Attributes\Autowire;
+use Swift\Model\EntityInterface;
+use Swift\Security\Security;
+
+/**
+ * Class FooService
+ * @package Foo\Service
+ */
+#[Autowire]
+class FooService {
+
+    /**
+     * FooService constructor.
+     *
+     * @param Security $security
+     * @param ConfigurationInterface $configuration
+     * @param EntityInterface $fooRepository
+     * @param string|null $nonAutowired
+     */
+    public function __construct(
+        private Security $security,
+        private ConfigurationInterface $configuration,
+        private EntityInterface $fooRepository,
+        private string|null $nonAutowired = null,
+    ) {
+    }
+    
+}
+``` 
+
 ## Interface injection
-To prevent code from becoming to dependent on specific implementations it is recommended to use interfaces instead of direct class references. This however present challenges for autowiring since an interface is not linked to a class implementation, and so the container will need a little help in finding the right class associated to the interface. The container uses 'aliases' which are combination between interface name and variable name to reference to implementing classes.
+To prevent code from becoming dependent on specific implementations it is recommended to use interfaces instead of direct class references. This however presents challenges for autowiring since an interface is not directly linked to a class implementation, and so the container will need a little help in finding the right class associated to the interface. The container uses 'aliases' which are combination between interface name and variable name to reference to implementing classes. 
+
+During container compilation default aliases based on Interface implementations will already be created. See 'Default Alias' for more on this.
 
 ### Default alias
 By default a camelCase alias will be created according to following example:
@@ -233,7 +276,7 @@ declare(strict_types=1);
 namespace Foo\Repository;
 
 use Swift\Kernel\Attributes\DI;
-use Swift\Model\Attributes\DB;
+use Swift\Model\Attributes\DBTable;
 use Swift\Model\Entity;
 use Swift\Model\EntityInterface;
 
@@ -241,15 +284,19 @@ use Swift\Model\EntityInterface;
  * Class FooRepository
  * @package Foo\Repository
  */
-#[DI(aliases: [EntityInterface::class . ' $fooRepository']), DB(table: 'foo_bar')]
+#[DI(aliases: [EntityInterface::class . ' $fooRepository']), DBTable(name: 'foo_bar')]
 class FooRepository extends Entity {
 
 }
 ```
 
 ## Compiler passes
-It is possible to directly hook into the container compilation and adjust the service definitions in any desired way. Doing this required creating a class tagged with the COMPILER_PASS tag as in the example below from the GraphQl component. When to container compiles it will iterate through all compiler passes and call the `proces` method with itself as argument.
+It is possible to directly hook into the container compilation and adjust the service definitions in any desired way. There's to kinds of CompilerPasses:
+ - On compilation CompilerPass (default Symfony CompilerPass)
+ - Post compilation CompilerPass (passes run after the container compiled, but before the application in initialized)
 
+### On Compilation CompilerPass
+To register the compiler pass simply implement the ``Swift\Kernel\Container\CompilerPass\CompilerPassInterface``. This is useful for adding actual configuration before compilation. See the example below from the GraphQl component.
 ```php
 declare(strict_types=1);
 
@@ -259,16 +306,14 @@ use Swift\GraphQl\Attributes\InputType;
 use Swift\GraphQl\Attributes\Mutation;
 use Swift\GraphQl\Attributes\Query;
 use Swift\GraphQl\Attributes\Type;
-use Swift\Kernel\Attributes\DI;
-use Swift\Kernel\DiTags;
+use Swift\GraphQl\GraphQlDiTags;
+use Swift\Kernel\Container\CompilerPass\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
 /**
  * Class GraphQlCompilerPass
  * @package Swift\GraphQl\Kernel
  */
-#[DI(tags: [DiTags::COMPILER_PASS])]
 class GraphQlCompilerPass implements CompilerPassInterface {
 
     /**
@@ -279,19 +324,63 @@ class GraphQlCompilerPass implements CompilerPassInterface {
             $classReflection = $container->getReflectionClass($definition->getClass());
 
             if (!empty($classReflection?->getAttributes(name: Type::class))) {
-                $definition->addTag(name: 'graphql.type');
+                $definition->addTag(name: GraphQlDiTags::GRAPHQL_TYPE);
             }
 
             if (!empty($classReflection?->getAttributes(name: InputType::class))) {
-                $definition->addTag( name: 'graphql.input_type' );
+                $definition->addTag( name: GraphQlDiTags::GRAPHQL_INPUT_TYPE );
             }
 
             foreach ($classReflection?->getMethods() as $reflectionMethod) {
                 if (!empty($reflectionMethod->getAttributes(name: Query::class))) {
-                    $definition->addTag(name: 'graphql.query');
+                    $definition->addTag(name: GraphQlDiTags::GRAPHQl_QUERY);
                 }
                 if (!empty($reflectionMethod->getAttributes(name: Mutation::class))) {
-                    $definition->addTag(name: 'graphql.mutation');
+                    $definition->addTag(name: GraphQlDiTags::GRAPHQL_MUTATION);
+                }
+            }
+        }
+    }
+}
+```
+
+### Post Compilation CompilerPass
+Useful for post compilation tasks like registering tagged events or subscribers.
+```php
+declare(strict_types=1);
+
+namespace Swift\Events\DI;
+
+use Swift\Events\Attribute\ListenTo;
+use Swift\Events\EventDispatcher;
+use Swift\Kernel\Container\CompilerPass\PostCompilerPassInterface;
+use Swift\Kernel\KernelDiTags;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+/**
+ * Class EventRegistrationCompilerPass
+ * @package Swift\Events\DI
+ */
+class EventRegistrationCompilerPass implements PostCompilerPassInterface {
+
+    /**
+     * @inheritDoc
+     */
+    public function process( ContainerBuilder $container ) {
+        /** @var EventDispatcher $eventDispatcher */
+        $eventDispatcher = $container->get(EventDispatcher::class);
+
+        // Get all event subscribers and register them by name
+        foreach ($container->getDefinitions() as $definition) {
+            if ($definition->hasTag(KernelDiTags::EVENT_SUBSCRIBER)) {
+                $eventDispatcher->addSubscriber($container->get($definition->getClass()));
+            }
+
+            $reflection = $container->getReflectionClass($definition->getClass());
+            foreach ($reflection->getMethods() as $reflectionMethod) {
+                if (!empty($reflectionMethod->getAttributes(ListenTo::class))) {
+                    $attribute = $reflectionMethod->getAttributes(ListenTo::class)[0]->getArguments();
+                    $eventDispatcher->addListener($attribute['event'], [$container->get($definition->getClass()), $reflectionMethod->getName()]);
                 }
             }
         }

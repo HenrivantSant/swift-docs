@@ -15,7 +15,7 @@ To determine whether access is granted system of Voters is used. Voters should i
 
 Abstain is relevant when the voter has no possible answer. E.g. the Authenticated Voter has no clue when there's asked for a vote on a User Role. In this case the voter would abstain from voting.
 
-The component comes with default Voters on User Roles and User Authentication. No need to write custom Voters on this subject if you're adding major extended functionality in that area.
+The component comes with default Voters on User Roles and User Authentication. No need to write custom Voters on this subject if you're not adding major extended functionality in that area.
 
 ```php
 declare(strict_types=1);
@@ -52,7 +52,7 @@ interface VoterInterface {
 ```
 
 ### User Role Voter
-User Role Voter confirms whether a user has a certain role. Do not use Swift\Security\User\UserInterface::getRoles() to determine whether the user has a certain role as this only return the direct assigned roles. Roles can be related with each other or have a certain hierarchy. There are some default options:
+User Role Voter confirms whether a user has a certain role. Do not use Swift\Security\User\UserInterface::getRoles() to determine whether the user has a certain role as this only return the directly assigned roles. Roles can be related with each other or have a certain hierarchy. There are some default options:
 ```php
 declare(strict_types=1);
 
@@ -81,7 +81,7 @@ class AuthorizationRolesEnum extends Enum {
 ```
 
 ### Authenticated Voter
-The Authenticated voter determines whether the currently a user or client has authenticated, but also how it authenticated. This are the options:
+The Authenticated voter determines whether the current user or client has authenticated, but also how it authenticated. This are the options:
 ```php
 declare(strict_types=1);
 
@@ -108,11 +108,11 @@ class AuthorizationTypesEnum extends Enum {
 ### Custom Voter
 To create a custom voter simply implement the ``Swift\Security\Authorization\Voter\VoterInterface``. This Interface is pre-tagged and will automatically register in the AccessDecisionManager. 
 
-Note: Make sure to return ACCESS_ABSTAIN is no vote could be made!
+Note: Make sure to return ACCESS_ABSTAIN if no vote could be made!
 
 ## Strategies
 By default there's four possible strategies on voting.
-- ``Swift\Security\Authorization\Strategy\AffirmativeDecisionStrategy``
+- ``Swift\Security\Authorization\Strategy\AffirmativeDecisionStrategy``   
   Grants access if any voter returns an affirmative response
 - ``Swift\Security\Authorization\Strategy\ConsensusDecisionStrategy``  
   Grants access if there is consensus of granted against denied responses.  
@@ -120,7 +120,7 @@ By default there's four possible strategies on voting.
 - ``Swift\Security\Authorization\Strategy\PriorityDecisionStrategy``  
   Grant or deny access depending on the first voter that does not abstain.  
   The priority of voters can be used to overrule a decision.
-- ``Swift\Security\Authorization\Strategy\UnanimousDecisionStrategy``
+- ``Swift\Security\Authorization\Strategy\UnanimousDecisionStrategy``  
   Grants access if only grant (ignoring abstain) votes were received.
   
 What if all voters abstain from voting? By default access is denied when all voters abstain from voting. The can be overruled in the configuration.

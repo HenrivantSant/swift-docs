@@ -2,7 +2,7 @@
 module.exports = {
     title: 'Swift PHP Framework',
     tagline: 'Swiftly build any API',
-    url: 'https://henrivantsant.github.io',
+    url: 'https://swiftapi.github.io',
     baseUrl: '/swift-docs/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
@@ -13,7 +13,7 @@ module.exports = {
         navbar: {
             title: 'Swift',
             logo: {
-                alt: 'My Site Logo',
+                alt: 'Swift Logo',
                 src: 'img/logo.svg',
             },
             items: [
@@ -26,7 +26,7 @@ module.exports = {
                 {to: 'blog', label: 'Blog', position: 'left'},
                 {to: 'next', label: 'Next', position: 'left'},
                 {
-                    href: 'https://github.com/HenrivantSant/swift',
+                    href: 'https://github.com/SwiftAPI/swift',
                     label: 'GitHub',
                     position: 'right',
                 },
@@ -62,7 +62,7 @@ module.exports = {
                         },
                         {
                             label: 'GitHub',
-                            href: 'https://github.com/HenrivantSant/swift',
+                            href: 'https://github.com/SwiftAPI/swift',
                         },
                     ],
                 },
@@ -81,13 +81,13 @@ module.exports = {
                     sidebarPath: require.resolve('./sidebars.js'),
                     // Please change this to your repo.
                     editUrl:
-                        'https://github.com/HenrivantSant/swift-docs/tree/master',
+                        'https://github.com/SwiftAPI/swift-docs/tree/master',
                 },
                 blog: {
                     showReadingTime: true,
                     // Please change this to your repo.
                     editUrl:
-                        'https://github.com/HenrivantSant/swift',
+                        'https://github.com/SwiftAPI/swift',
                 },
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),

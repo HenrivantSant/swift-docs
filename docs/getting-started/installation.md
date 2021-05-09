@@ -3,12 +3,12 @@ title: Installation
 ---
 
 ## Option 1: Starter template
-The easiest way is to kickoff with the starter template (https://github.com/HenrivantSant/swift-starter).
+The easiest way is to kickoff with the starter template (https://github.com/SwiftAPI/swift-starter).
 
 ### Install
 Create a project and pass the of your project. Run the command below and change project_name to the name of your project.
 ```shell
-composer create-project henrivantsant/swift-starter project_name
+composer create-project swift-api/swift-starter project_name
 ```
 After running a new directory is created. Type `cd project_name` in your terminal (your project's name) to enter the project. This is necessary for the next step.
 
@@ -50,13 +50,13 @@ From here you can rename the references from MyApp to your own namespace and get
 This one quite a bit harder and not recommended, however it is possible.
 
 ### Install
-Get it from Composer https://packagist.org/packages/henrivantsant/swift. Only do this if you're quite familiar with Swift.
-```php
-composer require henrivantsant/swift
+Get it from Composer https://packagist.org/packages/swift-api/swift. Only do this if you're quite familiar with Swift.
+```shell
+composer require swift-api/swift
 ```
 
 ### Create right file structure
-See https://github.com/HenrivantSant/swift-starter as a reference for setting the right folder structure and files.
+See https://github.com/SwiftAPI/swift-starter as a reference for setting the right folder structure and files.
 
 ### Init database
 Make sure to fill out login detail to a database in /etc/config/database.yaml

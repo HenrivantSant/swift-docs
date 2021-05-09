@@ -10,6 +10,10 @@ module.exports = {
         },
         {
             type: 'doc',
+            id: 'application-lifecycle',
+        },
+        {
+            type: 'doc',
             id: 'attributes',
         },
         {
@@ -50,7 +54,7 @@ module.exports = {
         },
         {
             type: 'doc',
-            id: 'routing',
+            id: 'routing-and-controllers',
         },
         {
             type: 'category',

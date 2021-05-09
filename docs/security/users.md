@@ -71,7 +71,7 @@ _Response_
 ```
 
 ### Reset password
-As you can see in the example above the resetPasswordToken is not return directly for security reasons. The system does also not do this automatically since it's highly likely you'd want to moderate this message to the user anyway. So you'll need to listen to the Event and notify the user of the token.
+As you can see in the example above the resetPasswordToken is not returned directly for security reasons. The system does also not send any communication to the user with the token automatically since it's highly likely you'd want to moderate this message to the user anyway. So you'll need to listen to the Event and notify the user of the token.
 
 #### Example: Notify user of token
 See below how this could be achieved. You'd obviously want to do this different, but it gives you an idea.
@@ -96,7 +96,7 @@ class OnAfterAuthentication {
      * @param AuthenticationTokenCreatedEvent $event
      */
     #[ListenTo(event: AuthenticationTokenCreatedEvent::class)]
-    public function assignUserRoles( AuthenticationTokenCreatedEvent $event ): void {
+    public function sendResetPasswordToken( AuthenticationTokenCreatedEvent $event ): void {
         if ($event->getToken() instanceof ResetPasswordToken) {
             mail(
                 to: $event->getToken()->getUser()->getEmail(),
@@ -109,12 +109,12 @@ class OnAfterAuthentication {
 }
 ```
 
-#### Example: Rest
+#### Reset Password Example: Rest
 _Request (/users/password/reset/) POST_
 ```json
 {
     "resetPasswordToken": "d1c926ba541338e76971c1ded10d147bbd8f1747",
-    "newPassword": "henri"
+    "newPassword": "foobar"
 }
 ```
 _Response_
@@ -125,7 +125,7 @@ _Response_
 }
 ```
 
-#### Example: GraphQl
+#### Reset Password Example: GraphQl
 _Request_
 ```graphql
 mutation($resetPasswordToken: String!, $newPassword: String!) {

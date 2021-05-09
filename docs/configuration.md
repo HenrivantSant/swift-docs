@@ -3,13 +3,14 @@ title: Configuration
 ---
 
 The system uses [Yaml](https://yaml.org/) for configuration.
-### Basic setup
-The basic app configuration setup is as below. Place this config.yaml file in the etc/config/ directory of your project. The configuration comes with three configuration which are necessary. Security will be preset for you and you don't need to change anything here if there's no need.
+## Basic setup
+The basic app configuration setup is as below. Place these yaml files in the etc/config/ directory of your project. The configuration comes with three configuration files which are necessary. Security (security.yaml) will be preset for you and you don't need to change anything here if there's no need.
+
 #### app.yaml
 ```yaml
 app:
   # App name
-  name: API Henri
+  name: Foo Bar App
   # App mode (either develop or production)
   mode: develop
   # Enable/disable debug mode
@@ -21,9 +22,11 @@ app:
 
 routing:
   # Base url used in route matching. This is also useful on sub domains
-  baseurl: api2.henrivantsant.com
+  baseurl: foo.bar.com
 
 graphql:
+  # Enable/disable graphql 
+  enabled: true
   # Enable/disable introspection for graphql
   enable_introspection: true
 
@@ -31,9 +34,9 @@ logging:
   # Enable/disable mails for logger
   enable_mail: true
   # Mail from address
-  logging_mail_from: log@henrivantsant.com
+  logging_mail_from: log@foo-bar.com
   # Mail to address
-  logging_mail_to: log@henrivantsant.com
+  logging_mail_to: log@foo-bar.com
 ```
 #### database.yaml
 For more on the actual working of this, see the Database component.
@@ -71,26 +74,52 @@ access_decision_manager:
 
 access_control:
 ```
-#### Using app configuration
-It is not unthinkable that you might want some configuration for you specific app. This is possible. First make sure to add a config.yaml file the app directory. This is the entry point for app configuration. Here you import your app config.
+
+## Configuration scopes
+To organize configuration, this is split in into different categories called 'scopes'. 
+
+By default, there are three of those:
+ - app (etc/config/app.yaml)
+ - database (etc/config/database.yaml)
+ - security (etc/config/security.yaml)
+
+All three scopes have their own drivers, but they're all available through the generic Configuration ``Swift\Configuration\ConfigurationInterface``.
+
+## Defining custom configuration
+It is highly likely that you might have the need for custom/additional configuration. This is easily possible. Swift checks the app directory for a config.yaml file. If it is present use it import app configuration files. See the example below.  
+
+_app/config.yaml_
 ```yaml
 imports:
   - { resource: app/Foo/config.yaml }
 ```
-In the app/Foo directory also place a config.yaml file (as imported above)
+
+Now let's add some configuration in there.  
+
+_app/Foo/config.yaml_
 ```yaml
 foo:
     bar: example
     lorem: ipsum
 ```
 
-### Configuration scopes
-The configuration is build in scopes. The root configuration has a scope as well, but can be ignored. The configuration in the file 'app/Foo/config.yaml' Will be in the scope 'app/Foo'. The idea behind is to isolate configuration in groups.
+## Reading the configuration
+To read the configuration you will have to inject the `Swift\Configuration\Configuration` class (or `Swift\Configuration\ConfigurationInterface $configuration`). Simply calling the 'get' method is enough. The first argument is the name of the setting and the second one is the scope. Reading the app configuration uses the 'app' as scope.
+```php
+// Get foo bar value from the example above
+$fooBarConfigurationValue = $this->configuration->get('foo.bar', 'app/Foo');
 
-### Reading the configuration
-To read the configuration you will have to inject the `Swift\Configuration\Configuration` class (or `private Swift\Configuration\ConfigurationInterface $configuration`). Simply calling the 'get' method is enough. To get the value of bar from the example above would work like this `$this->configuration->get('foo.bar', 'app/Foo');`. The first argument is the name of the setting and the second one is the scope. Reading the root configuration uses the 'root' as scope. Checking whether the app in debug mode would work like this `$this->configuration->get('app.debug', 'app');` or getting the database username: `$this->configuration->get('database.username', 'database');`.
+// Check if app is in debug mode
+$isDebug = $this->configuration->get('app.debug', 'app');
 
-### Writing the configuration (from code)
-Writing the configuration works in the exact same matter. Note that is not possible to write to non-existing settings. Make sure the already exist before. 
+// Database username
+$databaseUsername = $this->configuration->get('connection.username', 'database');
+```
 
-Writing to the foo.bar setting as above would work as `$this->configuration->set('foo.bar', 'writing example', 'app/Foo');`. Note that this works exactly the same as getting a setting, except now the second parameter is the new value you wish to assign.
+## Writing the configuration
+Writing the configuration works in the exact same matter. Note that is not possible to write to non-existing settings. Make sure the setting you're trying to write is defined on beforehand.
+
+```php
+// Write to the previous foo.bar example
+$this->configuration->set('foo.bar', 'writing example', 'app/Foo');
+```

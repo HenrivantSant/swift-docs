@@ -72,14 +72,14 @@ class FooController extends AbstractController {
 
 Don't worry too much about what's going on above, but here is a basic example of a route. In this example we expose the route 'foo/bar' for all GET requests. How come? On the class of the controller you can provide a prefix for all controllers routes. This is highly recommended to force you to group specific routes and use different controllers for different kinds of stuff.
 
-On the method `getBar()` we expose the route '/bar'/ which will be prefixed with the constructor route. So this results in '/foo/bar'. The moment this route is matched this method will be called. This is the first point entry for the actual app logic. All the data from the request can be found in the Request which is available in the controller by default. All the request data is accessible through `$this->getRequest()`. Note that route definitions by convention always start and end with forward slashes.
+On the method `getBar()` we expose the route '/bar'/ which will be prefixed with the class route. So this results in '/foo/bar'. The moment this route is matched this method will be called. This is the first point entry for the actual app logic. All the data from the request can be found in the Request which is available in the controller by default. All the request data is accessible through `$this->getRequest()`. Note that route definitions by convention always start and end with forward slashes.
 
 But what if you want a variable like an id? More on the specifics of building the Route Annotation in the chapter 'Route Attribute'. 
 
 NOTE: Multiple types can be exposed for a given route. Also the same route can lead to different methods on the controller based on the Method used to make the request. The class route must allow for all HTTP Methods used in the definitions within. Type HTTP methods in writing (uppercase) or simple refer using the `Swift\Router\Types\RouteMethodEnum` as in the example above. 
 
-## Route annotation
-The Router will 'harvest' all methods in the controllers classes with a `#[Route]` attribute, and map those as routes. If a route annotation is used on the class (highly recommended) this will be used as a prefix for all methods in this specific controller as explained in the example above.
+## Route Attribute
+The Router will 'collect' all methods in the controllers classes with a `#[Route]` attribute, and map those as routes. If a route attribute is used on the class (highly recommended) this will be used as a prefix for all methods in this specific controller as explained in the example above.
 
 The attributes come with the following settings:
 - method = Allowed HTTP methods to call this route (e.g. GET, POST, PATCH, PUT, etc.). There is no filter on this, so you're free to use custom methods as well. Multiple methods can be provided together like `#[Route(method="[GET, POST, PUT]", route="/bar/"]`. Usually this should only be necessary on the class. There is no wildcard to allow all methods as you should normally not direct a GET request for data to the same functionality as e.g. a POST request.
@@ -102,7 +102,7 @@ This means you could have the same route for different HTTP Methods if you would
      * @return JsonResponse
      */
     #[Route( method: [RouteMethodEnum::POST], route: '/login/', name: 'security.user.login', isGranted: [AuthorizationTypesEnum::IS_AUTHENTICATED_DIRECTLY], tags: [Route::TAG_ENTRYPOINT] )]
-    public function login( array $params ): JsonResponse {
+    public function login( RouteParameterBag $params ): JsonResponse {
         $data = $this->getCurrentUser()?->serialize();
         $data->token = new \stdClass();
         $data->token->token = $this->getSecurityToken()->getTokenString();
@@ -116,7 +116,7 @@ This means you could have the same route for different HTTP Methods if you would
 Note: This principle is fork of [AltoRouter](https://github.com/dannyvankooten/AltoRouter).
 As you can see in the previous example there some weird syntax going on in the route parameter in the attribute. This a route 'variable' with the name 'article_id'. Each route can have multiple variables which allows for the url to be for (like in this example) '/bar/123'.
 
-Variables always follow the syntax `[variable_type:variable_name]`. Variable types are predefined and the variable is up to yourself, you will need the variable name to extract it's value later (123 in this case).
+Variables always follow the syntax `[variable_type:variable_name]`. Variable types are predefined and the variable name is up to yourself, you will need the variable name to extract it's value later (123 in this case).
 
 Variable types:
 ```php
@@ -152,7 +152,7 @@ Okay so we can use several variables, convenient! How to read this? Easy! The va
      * @return JSONResponse
      */
     #[Route(method: [RouteMethodEnum::GET], route: '/bar/[i:article_id]/', name: 'foo.get_bar')]
-    public function getBar( array $params): JsonResponse {
+    public function getBar( RouteParameterBag $params): JsonResponse {
         // Let's return the article here
 
         $article_id = $params->get('article_id')->getValue();
@@ -208,8 +208,55 @@ Without message:
 ## Hooking in to the router (Route Events)
 TODO
 
-### Register your own variable types
-TODO
+### Register your own variable types (MatchTypes)
+As discussed before it's possible to define variables in route declarations. Those variables are declared by MatchTypes. It's possible to add custom types (regexes). To do so, create a class implementing the ``Swift\Router\MatchTypes\MatchTypeInterface``. Below an example of the AlphaNumeric MatchType.
+
+There's three methods to implement here.
+ - getIdentifier() -> return name of MatchType, the router will use this to identify back to this MatchType from usage in the route declaring ('/foo/bar/[a:example]')
+ - getRegex() -> Regex pattern to match for this MatchType
+ - parseValue() -> If the route has matched the MatchType it will call the parseValue method to (optionally) parse the value. In this example we specifically return a string, but any type is allowed by the Interface (mixed).
+
+```php
+declare(strict_types=1);
+
+namespace Swift\Router\MatchTypes;
+
+use Swift\HttpFoundation\RequestInterface;
+
+/**
+ * Class Integer
+ * @package Swift\Router\MatchTypes
+ *
+ * Match alphanumeric characters
+ */
+class AlphaNumeric implements MatchTypeInterface {
+
+    public const IDENTIFIER = 'a';
+    public const REGEX = '[0-9A-Za-z]++';
+
+    /**
+     * @inheritDoc
+     */
+    public function getIdentifier(): string {
+        return static::IDENTIFIER;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRegex(): string {
+        return static::REGEX;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function parseValue( mixed $value, RequestInterface $request ): string {
+        return preg_replace('/[^\da-z]/i', '', $value);
+    }
+
+}
+```
 
 ### Adding/modifying routes
 TODO

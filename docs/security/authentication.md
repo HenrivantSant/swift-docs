@@ -273,12 +273,12 @@ public function login( RouteParameterBag $params ): JsonResponse {
 ```
 
 ## Fetching the Token or User in Service
-By injecting the `Swift\Security\Security` class you will be able to fetch the Token, User and Passport in any Service. Note that it's not possible to inject those direct as those are not available yet a Container Compilation time.
+By injecting the `Swift\Security\Security` class you will be able to fetch the Token, User and Passport in any Service. Note that it's not possible to inject those directly as these are not available yet at Container Compilation time.
 
 ## Fetching the Token or User in Controller
 A Controller is by default already provided with the Security class through `$this->security`. However there's some handy shortcuts:
-- `$this->getSecurityToken()`
-- `$this->getCurrentUser()`
+- `$this->getSecurityToken()` // The authenticated token
+- `$this->getCurrentUser()` // The currently authenticated user (or NullUser)
 
 There is no shortcut for the Passport as this is mainly relevant during Authentication before a token has been granted.
 

@@ -20,14 +20,10 @@ $CLIApplication->run();
 ```
 This should be all. Open your command line in the root of the project and run ``php bin/console list``.
 
-## Default commands
-The system comes with a batch of useful commands. Get a list of all available commands by running `php bin/console list` from the command line in the root of your project. The specifics of each command will be explained in their respective chapters.
-
 ## Creating a custom command
-It is very easy to add your own command for running tasks, changing settings, creating cron commands, etc.
+It is very easy to add your own command for running tasks, changing settings, creating cron commands, etc. Create a command by extending the ``Swift\Console\Command\AbstractCommand``. 
 
-#### Output
-Symfony automatically provides a 'simple' output helper as the second argument for the execute method. If you desire some more styling to your command or for e.g. tables. Abstract Command already populated a [Symfony Style](https://symfony.com/doc/current/console/style.html) class ready to use e.g. ``$this->io->title(...)``.
+This class requires to create a method getCommandName() which should return the name of the command. Further this is an extension of the Symfony Command class with some handy utilities. It will automatically be recognized by the container and registered as a command.
 
 ```php
 declare(strict_types=1);
@@ -80,3 +76,60 @@ class FooCommand extends AbstractCommand {
 }
 ```
 
+### Output
+Symfony automatically provides a 'simple' output helper as the second argument for the execute method. If you desire some more styling to your command or for e.g. tables. Abstract Command already populated a [Symfony Style](https://symfony.com/doc/current/console/style.html) class ready to use e.g. ``$this->io->title(...)``.
+
+## Default commands
+The system comes with a batch of useful commands. Get a list of all available commands by running `php bin/console list` from the command line in the root of your project. The specifics of each command will be explained in their respective chapters.
+
+This should look something like this:
+```shell
+$ php bin/console list
+
+
+ ________  ___       __   ___  ________ _________
+|\   ____\|\  \     |\  \|\  \|\  _____\___   ___\
+\ \  \___|\ \  \    \ \  \ \  \ \  \__/\|___ \  \_|
+ \ \_____  \ \  \  __\ \  \ \  \ \   __\    \ \  \
+  \|____|\  \ \  \|\__\_\  \ \  \ \  \_|     \ \  \
+    ____\_\  \ \____________\ \__\ \__\       \ \__\
+   |\_________\|____________|\|__|\|__|        \|__|
+   \|_________|
+
+
+
+SWIFT CONSOLE 🚀
+
+Usage:
+  command [options] [arguments]
+
+Options:
+  -h, --help            Display help for the given command. When no command is given display help for the list command
+  -q, --quiet           Do not output any message
+  -V, --version         Display this application version
+      --ansi            Force ANSI output
+      --no-ansi         Disable ANSI output
+  -n, --no-interaction  Do not ask any interactive question
+  -t, --track-timing    Track and report execution time of command
+  -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+
+Available commands:
+  help                      Display help for a command
+  list                      List commands
+ config
+  config:get                Get a setting value
+ database
+  database:entities:update  Update all tables by their entities
+  database:entity:update    Update a table from an entity
+  database:table:create     Create a table
+ events
+  events:list:all           List available event(s)
+  events:list:single        Display event data
+ graphql
+  graphql:schema:dump       Dump graphql schema in type language
+ routing
+  routing:list              List all or any available route(s)
+ security
+  security:client:create
+  security:client:get       Get client by name
+```

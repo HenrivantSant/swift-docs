@@ -25,8 +25,13 @@ module.exports = {
             id: 'configuration',
         },
         {
-            type: 'doc',
-            id: 'database',
+            type: 'category',
+            label: 'Database layer',
+            items: [
+                'database/introduction',
+                'database/driver',
+                'database/entities',
+            ],
         },
         {
             type: 'doc',

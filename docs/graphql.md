@@ -16,6 +16,7 @@ Note that the documentation provided by Webonyx is only partially helpful since 
 GraphQl can be enabled with setting this is in the etc/app.yaml config. This will automatically enable the /graphql endpoint.
 ```yaml
 graphql:
+    enable: true
     enable_introspection: true
 ```
 

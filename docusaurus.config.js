@@ -1,6 +1,6 @@
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-    title: 'Swift PHP Framework',
+    title: 'Swift API Framework',
     tagline: 'Swiftly build any API',
     url: 'https://swiftapi.github.io',
     baseUrl: '/swift-docs/',

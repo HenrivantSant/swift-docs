@@ -141,112 +141,96 @@ Once the authenticator claims to support the request (for example credentials ha
 #### Stamps
 A Passport can be enriched with Stamps [`Swift\Security\Authentication\Passport\Stamp\StampInterface`](https://github.com/HenrivantSant/swift/blob/master/src/Security/Authentication/Passport/Stamp/StampInterface.php). This could for example tell that Authentication is already okay in case of a valid Bearer token. Take a look a `AccessTokenAuthenticator::authenticate()` for example:
 ```php
-/**
- * @inheritDoc
- */
-public function authenticate( RequestInterface $request ): PassportInterface {
-    /** @var HeaderBag $headers */
-    $headers = $request->getHeaders();
-    $accessToken = str_replace('Bearer ', '', $headers->get('authorization'));
-
-    if (!$token = $this->accessTokenEntity->findOne(array('accessToken' => $accessToken))) {
-        throw new InvalidCredentialsException('No valid token found', Response::HTTP_UNAUTHORIZED);
-    }
-
-    if (!$token->userId && !$token->clientId) {
-        throw new AuthenticationException('No user or client related to token');
-    }
-
-    if ($token->userId) {
-        $user = $this->userProvider->getUserById($token->userId);
-    } else {
-        $user = $this->oauthClientsEntity->findOne([
-            'id' => $token->clientId,
-        ]);
-
-        if (!$user) {
-            throw new AuthenticationException('Client not found');
+ public function authenticate( \Psr\Http\Message\RequestInterface $request ): PassportInterface {
+        $headers     = $request->getHeaders();
+        $accessToken = str_replace( 'Bearer ', '', $headers->get( 'authorization' ) );
+        
+        if ( ! $token = $this->entityManager->findOne( AccessTokenEntity::class, [ 'accessToken' => $accessToken ] ) ) {
+            throw new InvalidCredentialsException( 'No valid token found', Response::HTTP_UNAUTHORIZED );
         }
-
-        $user = new ClientUser(...(array) $user);
+        
+        if ( ! $token->getUser() && ! $token->getClient() ) {
+            throw new AuthenticationException( 'No user or client related to token' );
+        }
+        
+        if ( $token->getUser() ) {
+            $user = $this->userProvider->getUserById( $token->getUser()->getId() );
+        } else {
+            $user = ClientUser::fromClientEntity( $token->getClient(), $this->entityManager );
+        }
+        
+        return new Passport( $user, new AccessTokenCredentials( $token ), [ new PreAuthenticatedStamp( $token ) ] );
     }
-
-    return new Passport($user, new AccessTokenCredentials($token), array(new PreAuthenticatedStamp($token)));
-}
 ```
 
 #### Attributes
-Besides Stamps there's also attributes that can be passed. This no more, and no less than simple meta data that can shipped with the Passport. This could be useful for passing state or redirect data in case of Oauth authentication for example.
+Besides Stamps there's also attributes that can be passed. This is no more, and no less than simple metadata that can shipped with the Passport. This could be useful for passing state or redirect data in case of Oauth authentication for example.
 
 ### Token (Visa)
-After the Passport has been created in the authentication the Authenticator will be passed the Passport to `createAuthenticatedToken( PassportInterface $passport ): TokenInterface` to create a token based on this Passport. This token should implement the `Swift\Security\Authentication\Token\TokenInterface` and plays an important role on the application to provide the authentication user, it's scope, whether the user is authenticated. whether authentication has expired, etc.  
+After the Passport has been created in the authentication the Authenticator will be passed the Passport to `createAuthenticatedToken( PassportInterface $passport ): TokenInterface` to create a token based on this Passport. This token should implement `Swift\Security\Authentication\Token\TokenInterface` and plays an important role on the application to provide the authentication user, it's scope, whether the user is authenticated. whether authentication has expired, etc.  
 
-In this scope of Passports and Stamps it would make more sense to name a Token a 'Visa', but since 'Token' is generally accepted. This is the term that will be used. 
+In this scope of Passports and Stamps it would make more sense to name a Token a 'Visa', however since 'Token' is generally accepted, this is the term that will be used. 
 
 ## Events
 During Authentication several events are dispatched to patch into to append additional data, deny a Request access and more.
 ```php
-/**
- * @param RequestInterface $request
- *
- * @return PassportInterface
- */
 public function authenticate( RequestInterface $request ): PassportInterface {
-    if ( $authenticator = $this->getAuthenticator( $request ) ) {
-        try {
-            // Get the passport
-            $passport = $authenticator->authenticate( $request );
-
-            // Option for additional passport validation
-            $this->eventDispatcher->dispatch( new CheckPassportEvent( $authenticator, $passport ) );
-
-            // Create authenticated token
-            $token = $authenticator->createAuthenticatedToken( $passport );
-            $token = $this->eventDispatcher->dispatch( new AuthenticationTokenCreatedEvent( $token ) )->getToken();
-
-            // Store the token
-            $this->tokenStoragePool->setToken( $token );
-
-            // Finalize request with provided response
-            if ( $response = $authenticator->onAuthenticationSuccess( $request, $token ) ) {
-                $this->kernel->finalize( $response );
-            }
-
-            $this->security->setPassport( $passport );
-            $this->security->setUser( $token->getUser() );
-            $this->security->setToken( $token );
-
-            $this->eventDispatcher->dispatch( new AuthenticationSuccessEvent( $token, $passport, $request, $authenticator ) );
-
-            return $passport;
-        } catch ( AuthenticationException $authenticationException ) {
-            if ( $response = $authenticator->onAuthenticationFailure( $request, $authenticationException ) ) {
-                $this->kernel->finalize( $response );
-            }
-        }
+    $authenticator = $this->getAuthenticator( $request );
+    if ( ! $authenticator ) {
+        return $this->createNullPassport( $request );
     }
-
-    $token    = new Token\NullToken( new NullUser(), TokenInterface::SCOPE_ACCESS_TOKEN, null, false );
-    $passport = new Passport( $token->getUser(), new NullCredentials() );
-    $this->security->setPassport( $passport );
-    $this->security->setUser( $token->getUser() );
-    $this->security->setToken( $token );
-
-    return $passport;
+    
+    try {
+        // Get the passport
+        $passport = $authenticator->authenticate( $request );
+        
+        // Option for additional passport validation
+        $this->eventDispatcher->dispatch( new CheckPassportEvent( $authenticator, $passport ) );
+        
+        // Create authenticated token
+        $token = $authenticator->createAuthenticatedToken( $passport );
+        $token = $this->eventDispatcher->dispatch( new AuthenticationTokenCreatedEvent( $token ) )->getToken();
+        
+        // Store the token
+        $this->tokenStoragePool->setToken( $token );
+        
+        // Finalize request with provided response
+        if ( $response = $authenticator->onAuthenticationSuccess( $request, $token ) ) {
+            $this->kernel->finalize( $response );
+        }
+        
+        $this->security->setPassport( $passport );
+        $this->security->setUser( $token->getUser() );
+        $this->security->setToken( $token );
+        
+        $this->eventDispatcher->dispatch( new AuthenticationSuccessEvent( $token, $passport, $request, $authenticator ) );
+        
+        $this->eventDispatcher->dispatch( new AuthenticationFinishedEvent( $token, $passport, $request ) );
+        
+        return $passport;
+    } catch ( AuthenticationException $authenticationException ) {
+        if ( $response = $authenticator->onAuthenticationFailure( $request, $authenticationException ) ) {
+            $this->eventDispatcher->dispatch( new AuthenticationFailedEvent( $request, $authenticator, $authenticationException ) );
+            $this->kernel->finalize( $response );
+        }
+        $this->eventDispatcher->dispatch( new AuthenticationFailedEvent( $request, $authenticator, $authenticationException ) );
+    }
+    
+    return $this->createNullPassport( $request );
 }
 ```
 
 ## Entry points
-Since authentication occurs before a route is executed a user could potentially authentication against any valid uri. This is not desireable as that might lead to unwanted behaviour, and besides a lot of unclarity for end users.
+Since authentication occurs before a route is executed a user could potentially authenticate against any valid uri. This is not desirable as that might lead to unwanted behaviour, and besides a lot of unclarity for end users.
 
-One possible solution to this is to check the route in supports method in the authenticator and return false if the uri is not as desired. This works!
+One possible solution to this issue is to check the route in the supports method of the authenticator and return false if the uri is not as desired. This works!
 
-Another solution is to 'protect' the authenticator by having it implement ``Swift\Security\Authentication\Authenticator\AuthenticatorEntrypointInterface``. This will only allow the authenticator on Entry Point Routes. All Swift's default authenticators implement this execept for the AccessTokenAuthenticator as this is not bound to a specific route.
+Another solution is to 'protect' the authenticator by having it implement ``Swift\Security\Authentication\Authenticator\AuthenticatorEntrypointInterface``. This will only allow the authenticator on Entry Point Routes. All Swift's default authenticators implement this except for the AccessTokenAuthenticator as this is not bound to a specific route.
 
 ### Entry point routes
 A route can marked as being an Entry Point by added the ENTRY_POINT tag as in the example below.
 
-Also note that authentication has already finished when we get to the controller. We simply just get the user and return it. Also we require the user to be authenticated directly. When is a user is authenticated using a token retrieved by an earlier login this will not be true. This way we make sure we're dealing with a 'fresh' authentication. 
+Also note that authentication has already finished when we get to the controller. We simply just get the user and return it. Also, we require the user to be authenticated directly. When a user is authenticated using a token retrieved by an earlier login this will not be true. This way we make sure we're dealing with a 'fresh' authentication. 
 ```php
 /**
 * Rest user authentication endpoint
@@ -261,12 +245,10 @@ Also note that authentication has already finished when we get to the controller
 */
 #[Route( method: [RouteMethodEnum::POST], route: '/login/', name: 'security.user.login', isGranted: [AuthorizationTypesEnum::IS_AUTHENTICATED_DIRECTLY], tags: [Route::TAG_ENTRYPOINT] )]
 public function login( RouteParameterBag $params ): JsonResponse {
-    $data = $this->getCurrentUser()?->serialize();
-    $data->created = $data->created->format('Y-m-d H:i:s');
-    $data->modified = $data->modified->format('Y-m-d H:i:s');
-    $data->token = new \stdClass();
-    $data->token->token = $this->getSecurityToken()->getTokenString();
-    $data->token->expires = $this->getSecurityToken()->expiresAt()->format('Y-m-d H:i:s');
+    $data                 = $this->getCurrentUser()?->serialize();
+    $data->token          = new \stdClass();
+    $data->token->token   = $this->getSecurityToken()->getTokenString();
+    $data->token->expires = $this->getSecurityToken()->expiresAt()->format( 'Y-m-d H:i:s' );
     
     return new JsonResponse($data);
 }
@@ -276,7 +258,7 @@ public function login( RouteParameterBag $params ): JsonResponse {
 By injecting the `Swift\Security\Security` class you will be able to fetch the Token, User and Passport in any Service. Note that it's not possible to inject those directly as these are not available yet at Container Compilation time.
 
 ## Fetching the Token or User in Controller
-A Controller is by default already provided with the Security class through `$this->security`. However there's some handy shortcuts:
+A Controller is by default already provided with the Security class through `$this->security`. However, there's some handy shortcuts:
 - `$this->getSecurityToken()` // The authenticated token
 - `$this->getCurrentUser()` // The currently authenticated user (or NullUser)
 

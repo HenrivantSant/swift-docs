@@ -12,7 +12,7 @@ const features = [
         imageUrl: 'img/undraw_docusaurus_mountain.svg',
         description: (
             <>
-                Simplicity is key. Swift helps you develop your api's fast and easy. Promise.
+                Simplicity is key. Swift helps you develop your APIs fast and easy. Promised.
             </>
         ),
     },
@@ -21,7 +21,7 @@ const features = [
         imageUrl: 'img/undraw_docusaurus_tree.svg',
         description: (
             <>
-                Swift focuses on building api's or periodic tasks for data processing. All the tools you need come with the package.
+                Swift focuses on building APIs or periodic tasks for data processing. All the tools you need come with the package.
                 Easily build CLI commands, REST or GraphQL endpoints. Move to the <code>docs</code> and get started right away.
             </>
         ),

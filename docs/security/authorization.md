@@ -18,11 +18,11 @@ Abstain is relevant when the voter has no possible answer. E.g. the Authenticate
 The component comes with default Voters on User Roles and User Authentication. No need to write custom Voters on this subject if you're not adding major extended functionality in that area.
 
 ```php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Swift\Security\Authorization\Voter;
 
-use Swift\Kernel\Attributes\DI;
+use Swift\DependencyInjection\Attributes\DI;
 use Swift\Security\Authentication\Token\TokenInterface;
 use Swift\Security\Authorization\DiTags;
 
@@ -33,20 +33,20 @@ use Swift\Security\Authorization\DiTags;
 #[DI(tags: [DiTags::SECURITY_AUTHORIZATION_VOTER])]
 interface VoterInterface {
 
-    public const ACCESS_GRANTED = 'ACCESS_GRANTED';
-    public const ACCESS_DENIED = 'ACCESS_DENIED';
-    public const ACCESS_ABSTAIN = 'ACCESS_ABSTAIN';
-
+    public const ACCESS_GRANTED = Vote::ACCESS_GRANTED;
+    public const ACCESS_DENIED = Vote::ACCESS_DENIED;
+    public const ACCESS_ABSTAIN = Vote::ACCESS_ABSTAIN;
+    
     /**
      * Vote
      *
      * @param TokenInterface $token
-     * @param mixed $subject
-     * @param array $attributes
+     * @param mixed          $subject
+     * @param array          $attributes
      *
-     * @return string ACCESS_GRANTED || ACCESS_DENIED || ACCESS_ABSTAIN
+     * @return \Swift\Security\Authorization\Voter\Vote ACCESS_GRANTED || ACCESS_DENIED || ACCESS_ABSTAIN
      */
-    public function vote( TokenInterface $token, mixed $subject, array $attributes ): string;
+    public function vote( TokenInterface $token, mixed $subject, array $attributes ): Vote;
 
 }
 ```
@@ -54,53 +54,48 @@ interface VoterInterface {
 ### User Role Voter
 User Role Voter confirms whether a user has a certain role. Do not use Swift\Security\User\UserInterface::getRoles() to determine whether the user has a certain role as this only return the directly assigned roles. Roles can be related with each other or have a certain hierarchy. There are some default options:
 ```php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Swift\Security\Authorization;
 
-
-use Swift\Kernel\TypeSystem\Enum;
-
 /**
- * Class AuthorizationRolesEnum
+ * Class AuthorizationRole
  * @package Swift\Security\Authorization
  */
-class AuthorizationRolesEnum extends Enum {
+enum AuthorizationRole: string {
 
     // Main roles
-    public const ROLE_GUEST = 'ROLE_GUEST';
-    public const ROLE_USER = 'ROLE_USER';
-    public const ROLE_CLIENT = 'ROLE_CLIENT';
-    public const ROLE_ADMIN = 'ROLE_ADMIN';
-    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    case ROLE_GUEST = 'ROLE_GUEST';
+    case ROLE_USER = 'ROLE_USER';
+    case ROLE_CLIENT = 'ROLE_CLIENT';
+    case ROLE_ADMIN = 'ROLE_ADMIN';
+    case ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
     // Sub roles
-    public const ROLE_USERS_LIST = 'ROLE_USERS_LIST';
+    case ROLE_USERS_LIST = 'ROLE_USERS_LIST';
+    case ROLE_CHANGE_PASSWORD = 'ROLE_CHANGE_PASSWORD';
 
 }
 ```
 
 ### Authenticated Voter
-The Authenticated voter determines whether the current user or client has authenticated, but also how it authenticated. This are the options:
+The Authenticated voter determines whether the current user or client has authenticated, but also how it authenticated. These are the options:
 ```php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Swift\Security\Authorization;
 
-
-use Swift\Kernel\TypeSystem\Enum;
-
 /**
- * Class AuthorizationTypesEnum
+ * Class AuthorizationTypes
  * @package Swift\Security\Authorization
  */
-class AuthorizationTypesEnum extends Enum {
+enum AuthorizationType: string {
 
-    public const IS_AUTHENTICATED = 'IS_AUTHENTICATED';
-    public const IS_AUTHENTICATED_DIRECTLY = 'IS_AUTHENTICATED_DIRECTLY';
-    public const IS_AUTHENTICATED_ANONYMOUSLY = 'IS_AUTHENTICATED_ANONYMOUSLY';
-    public const IS_AUTHENTICATED_TOKEN = 'IS_AUTHENTICATED_TOKEN';
-    public const PUBLIC_ACCESS = 'PUBLIC_ACCESS';
+    case IS_AUTHENTICATED = 'IS_AUTHENTICATED';
+    case IS_AUTHENTICATED_DIRECTLY = 'IS_AUTHENTICATED_DIRECTLY';
+    case IS_AUTHENTICATED_ANONYMOUSLY = 'IS_AUTHENTICATED_ANONYMOUSLY';
+    case IS_AUTHENTICATED_TOKEN = 'IS_AUTHENTICATED_TOKEN';
+    case PUBLIC_ACCESS = 'PUBLIC_ACCESS';
 
 }
 ```
@@ -179,15 +174,20 @@ firewalls:
 role_hierarchy:
   ROLE_GUEST:
   ROLE_USER:
-  ROLE_CLIENT: ['ROLE_USERS_LIST']
-  ROLE_ADMIN: ['ROLE_USERS_LIST']
-  ROLE_SUPER_ADMIN: ['ROLE_ADMIN']
-
+  ROLE_CLIENT: [ROLE_USERS_LIST]
+  ROLE_ADMIN: [ ROLE_USERS_LIST ]
+  ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+  
 access_decision_manager:
   strategy: Swift\Security\Authorization\Strategy\AffirmativeDecisionStrategy
   allow_if_all_abstain: false
-
+  
 access_control:
+  - { path: ^/users, ip: [84.31.60.101, 84.31.60.193], roles: [IS_AUTHENTICATED] }
+  - 
+graphql_access_control:
+  - { name: SecurityUser, fields: [lastname], roles: [ROLE_USER, ROLE_FOO] }
+  - { name: SecurityUsersCredential, fields: [], roles: [ROLE_USER, ROLE_FOO] }
 ```
 
 ## Usage
@@ -239,16 +239,16 @@ interface AuthorizationCheckerInterface {
 #### How to use
 ```php
 // Returns a boolean (true on granted, false on not granted)
-$this->authorizationChecker->isGranted([AuthorizationRolesEnum::ROLE_CLIENT]);
+$this->authorizationChecker->isGranted([AuthorizationRole::ROLE_CLIENT]);
 
 // Throws Swift\HttpFoundation\Exception\AccessDeniedException when not granted.
-$this->authorizationChecker->denyUnlessGranted([AuthorizationRolesEnum::ROLE_CLIENT]);
+$this->authorizationChecker->denyUnlessGranted([AuthorizationRole::ROLE_CLIENT]);
 ```
 
 ## Controller shortcuts
 Controllers are equipped with some handy shortcuts. In a Controller you can directly call ``$this->denyAccessUnlessGranted()``.
 
-However even more useful for REST endpoints is the isGranted parameter on the Route Attribute. Below an example of the '/users/me/' endpoint.
+However, even more useful for REST endpoints is the isGranted parameter on the Route Attribute. Below an example of the '/users/me/' endpoint.
 ```php
 /**
  * Return currently authenticated user. For this it is required that a user is authenticated
@@ -258,7 +258,7 @@ However even more useful for REST endpoints is the isGranted parameter on the Ro
  * @return JsonResponse
  */
 #[Route( method: RouteMethodEnum::GET, route: '/me/', name: 'security.users.me', isGranted: [AuthorizationTypesEnum::IS_AUTHENTICATED] )]
-public function me( array $params ): JsonResponse {
+public function me( RouteParameterBag $params ): JsonResponse {
     $data = $this->getCurrentUser()->serialize();
     unset($data->password);
 

@@ -52,7 +52,7 @@ _Response_
 _Request (/users/password/forgot/) POST_
 ```graphql
 mutation($email: String!) {
-    ForgotPassword(email: $email) {
+    UserForgotPassword(email: $email) {
         message
         code
     }
@@ -62,7 +62,7 @@ _Response_
 ```json
 {
   "data": {
-    "ForgotPassword": {
+    "UserForgotPassword": {
       "message": "Successfully requested reset password token. The user has been notified.",
       "code": 200
     }
@@ -128,20 +128,20 @@ _Response_
 #### Reset Password Example: GraphQl
 _Request_
 ```graphql
-mutation($resetPasswordToken: String!, $newPassword: String!) {
-  ResetPassword(resetPasswordInput: {
-    resetPasswordToken: $resetPasswordToken,
-    newPassword: $newPassword
-  }) {
-    message
-    code
-  }
+mutation($token: String!, $password: String!) {
+    UserResetPassword(
+        token: $token,
+        password: $password
+    ) {
+        message
+        code
+    }
 }
 ```
 ```json
 {
     "data": {
-        "ResetPassword": {
+        "UserResetPassword": {
             "message": "Successfully reset password.",
             "code": 200
         }

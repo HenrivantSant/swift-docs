@@ -6,90 +6,53 @@ Under the hood the [Symfony Event Dispatcher](https://symfony.com/doc/current/co
 
 
 ## Subscriber or listening to events
-You can choose to subscribe to (multiple) events by using an EventSubscriber. An EventSubscriber has to return an array of the events it desires to listen to. An EventListener on the other hand can mark a public method as a Listener for a specific event by annotating it with the ListenTo attribute (example below).
+You can choose to subscribe to (multiple) events by using an EventSubscriber. An EventSubscriber has to return an array of the events it desires to listen (subscribe) to. An EventListener on the other hand can mark a public method as a Listener for a specific event by annotating it with the ListenTo attribute (example below).
 
 ### Subscribing to events
 When you want to do something when a given event occurs (like logging, or for example add a Route variable_type) you can subscribe to those events using a EventSubscriber instance. In contrary to Symfony, in this system Event Subscriber do support Dependency Injection. It is recommended to only use subscribers to 'catch' the event and use a service to execute the actual logic (and if applicable apply the result to the event). Quite the same as you would do in a Controller or a command. This makes the logic in the service reusable for different occasions and keeps the subscriber clean.
 
 ```php
-namespace Foo\EventSubscriber;
+<?php declare( strict_types=1 );
 
-use Henri\Framework\Configuration\Configuration;
-use Henri\Framework\Events\EventDispatcher;
-use Swift\Events\EventSubscriberInterface;
+
+namespace App\Foo\EventSubscriber;
+
+
 use Swift\Router\Event\OnBeforeRouteEnterEvent;
 
-final class FooSubscriber implements EventSubscriberInterface {
-
+class FooSubscriber implements \Swift\Events\EventSubscriberInterface {
+    
     /**
-     * @var Configuration $configuration
-     */
-    private $configuration;
-
-    /**
-     * FooSubscriber constructor.
-     *
-     * @param Configuration $configuration
-     */
-    public function __construct( Configuration $configuration ) {
-        $this->configuration = $configuration;
-    }
-
-
-    /**
-     * Returns an array of event names this subscriber wants to listen to.
-     *
-     * The array keys are event names and the value can be:
-     *
-     *  * The method name to call (priority defaults to 0)
-     *  * An array composed of the method name to call and the priority
-     *  * An array of arrays composed of the method names to call and respective
-     *    priorities, or 0 if unset
-     *
-     * For instance:
-     *
-     *  * ['eventName' => 'methodName']
-     *  * ['eventName' => ['methodName', $priority]]
-     *  * ['eventName' => [['methodName1', $priority], ['methodName2']]]
-     *
-     * @return array The event names to listen to
+     * @inheritDoc
      */
     public static function getSubscribedEvents(): array {
-        return array(
+        return [
             OnBeforeRouteEnterEvent::class => 'onBeforeRouteEnter',
-        );
+        ];
     }
-
-    /**
-     * @param OnBeforeRouteEnterEvent $event
-     * @param string $eventClassName
-     * @param EventDispatcher $eventDispatcher
-     */
-    public function onBeforeRouteEnter( OnBeforeRouteEnterEvent $event, string $eventClassName, EventDispatcher $eventDispatcher ): void {
-        // Read/modify event data or do some logging
+    
+    public function onBeforeRouteEnter( OnBeforeRouteEnterEvent $event ): void {
+        // Do something here
     }
-
+    
 }
 ```
 
 ### Listening to an event
 Listen to an event by marking the class an EventListener by implement the Interface and marking a method as a listener. Provide the event as argument in the attribute. The event will be passed to the method as an argument.
 ```php
-declare(strict_types=1);
+<?php declare( strict_types=1 );
 
-namespace Foo\Listener;
+
+namespace App\Foo\Listener;
+
 
 use Swift\Events\Attribute\ListenTo;
-use Swift\Events\EventListenerInterface;
 use Swift\Security\Authentication\Events\AuthenticationTokenCreatedEvent;
 use Swift\Security\Authentication\Token\ResetPasswordToken;
 
-/**
- * Class OnAfterAuthentication
- * @package Foo\Listener
- */
-class OnAfterAuthentication implements EventListenerInterface {
-
+class OnAfterAuthentication implements \Swift\Events\EventListenerInterface {
+    
     /**
      * Send user a mail with password reset token after creating one
      *
@@ -105,7 +68,7 @@ class OnAfterAuthentication implements EventListenerInterface {
             );
         }
     }
-
+    
 }
 ```
 

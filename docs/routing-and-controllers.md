@@ -9,21 +9,21 @@ Controllers are classes in which available routes are defined and in which actio
 ```php
 declare(strict_types=1);
 
-namespace Foo\Controller;
+namespace App\Foo\Controller;
 
-use Foo\Service\FooService;
+use App\Foo\Service\FooService;
 use Swift\Configuration\ConfigurationInterface;
 use Swift\Controller\AbstractController;
 use Swift\HttpFoundation\JsonResponse;
 use Swift\Router\Attributes\Route;
 use Swift\Router\RouteParameterBag;
-use Swift\Router\Types\RouteMethodEnum;
+use Swift\Router\Types\RouteMethod;
 
 /**
  * class FooController
  * @package Foo\Controller
  */
-#[Route(method: [RouteMethodEnum::GET, RouteMethodEnum::PATCH], route: '/foo/', name: 'foo')]
+#[Route(method: [RouteMethod::GET, RouteMethod::PATCH], route: '/foo/', name: 'foo')]
 class FooController extends AbstractController {
 
     /**
@@ -34,9 +34,9 @@ class FooController extends AbstractController {
      * @param string|null $notAutowired
      */
     public function __construct(
-        private ConfigurationInterface $configuration,
-        private FooService $fooService,
-        private string|null $notAutowired = null,
+        protected ConfigurationInterface $configuration,
+        protected FooService $fooService,
+        protected ?string $notAutowired = null,
     ) {
     }
 
@@ -45,16 +45,16 @@ class FooController extends AbstractController {
      *
      * @return JSONResponse
      */
-    #[Route(method: [RouteMethodEnum::GET], route: '/bar/[i:article_id]/', name: 'foo.get_bar')]
+    #[Route(method: [RouteMethod::GET], route: '/bar/[i:article_id]/', name: 'foo.get_bar')]
     public function getBar( RouteParameterBag $params): JsonResponse {
         // Let's return the article here
 
         $article_id = $params->get('article_id')->getValue();
 
-        return new JsonResponse(array(
+        return new JsonResponse( [
             'article_id' => $article_id,
             'title' => 'Foo Bar',
-        ));
+        ] );
     }
 
     /**
@@ -62,10 +62,10 @@ class FooController extends AbstractController {
      *
      * @return JsonResponse
      */
-    #[Route(method: [RouteMethodEnum::PATCH], route: '/bar/[i:article_id]/', name: 'foo.patch_bar')]
+    #[Route(method: [RouteMethod::PATCH], route: '/bar/[i:article_id]/', name: 'foo.patch_bar')]
     public function patchBar( RouteParameterBag $params): JsonResponse {
         // Let's update the article here
-        return new JsonResponse(array('foo bar'));
+        return new JsonResponse( ['foo bar' ] );
     }
 }
 ```
@@ -76,15 +76,15 @@ On the method `getBar()` we expose the route '/bar'/ which will be prefixed with
 
 But what if you want a variable like an id? More on the specifics of building the Route Annotation in the chapter 'Route Attribute'. 
 
-NOTE: Multiple types can be exposed for a given route. Also the same route can lead to different methods on the controller based on the Method used to make the request. The class route must allow for all HTTP Methods used in the definitions within. Type HTTP methods in writing (uppercase) or simple refer using the `Swift\Router\Types\RouteMethodEnum` as in the example above. 
+NOTE: Multiple types can be exposed for a given route. Also, the same route can lead to different methods on the controller based on the Method used to make the request. The class route must allow for all HTTP Methods used in the definitions within. Type HTTP methods in writing (uppercase) or simple refer using the `Swift\Router\Types\RouteMethod` as in the example above. 
 
 ## Route Attribute
 The Router will 'collect' all methods in the controllers classes with a `#[Route]` attribute, and map those as routes. If a route attribute is used on the class (highly recommended) this will be used as a prefix for all methods in this specific controller as explained in the example above.
 
 The attributes come with the following settings:
-- method = Allowed HTTP methods to call this route (e.g. GET, POST, PATCH, PUT, etc.). There is no filter on this, so you're free to use custom methods as well. Multiple methods can be provided together like `#[Route(method="[GET, POST, PUT]", route="/bar/"]`. Usually this should only be necessary on the class. There is no wildcard to allow all methods as you should normally not direct a GET request for data to the same functionality as e.g. a POST request.
+- method = Allowed HTTP methods to call this route (e.g. GET, POST, PATCH, PUT, etc.). Multiple methods can be provided together like `#[Route(method="[GET, POST, PUT]", route="/bar/"]`. Usually this should only be necessary on the class. There is no wildcard to allow all methods as you should normally not direct a GET request for data to the same functionality as e.g. a POST request.
 
-This means you could have the same route for different HTTP Methods if you would desire this. You can have an endpoint `/article/[i:id]/`, where the a GET would lead to method which would return the value of the article with the given id, and where PATCH for example to this same endpoint would update the given article. Makes sense to split this into different methods right?
+This means you could have the same route for different HTTP Methods if you would desire this. You can have an endpoint `/article/[i:id]/`, where the GET would lead to method which would return the value of the article with the given id, and where PATCH for example to this same endpoint would update the given article. Makes sense to split this into different methods right?
 - route = The route for this method with a leading and closing slash
 - name = Make the route easy to find back in the router and allow for reversed routing
 - isGranted = Validate user is granted certain rights or status. More on this in de Security documentation
@@ -101,7 +101,7 @@ This means you could have the same route for different HTTP Methods if you would
      *
      * @return JsonResponse
      */
-    #[Route( method: [RouteMethodEnum::POST], route: '/login/', name: 'security.user.login', isGranted: [AuthorizationTypesEnum::IS_AUTHENTICATED_DIRECTLY], tags: [Route::TAG_ENTRYPOINT] )]
+    #[Route( method: [RouteMethodEnum::POST], route: '/login/', name: 'security.user.login', isGranted: [AuthorizationType::IS_AUTHENTICATED_DIRECTLY], tags: [Route::TAG_ENTRYPOINT] )]
     public function login( RouteParameterBag $params ): JsonResponse {
         $data = $this->getCurrentUser()?->serialize();
         $data->token = new \stdClass();
@@ -113,12 +113,12 @@ This means you could have the same route for different HTTP Methods if you would
 ```
 
 ### Variables in urls
-Note: This principle is fork of [AltoRouter](https://github.com/dannyvankooten/AltoRouter).
-As you can see in the previous example there some weird syntax going on in the route parameter in the attribute. This a route 'variable' with the name 'article_id'. Each route can have multiple variables which allows for the url to be for (like in this example) '/bar/123'.
+Note: This principle is fork of [AltoRouter](https://github.com/dannyvankooten/AltoRouter).  
+As you can see in the previous example there some weird syntax going on in the route parameter in the attribute. This a route 'variable' with the name 'article_id'. Each route can have multiple variables which allows for the url to be like '/bar/123'.
 
 Variables always follow the syntax `[variable_type:variable_name]`. Variable types are predefined and the variable name is up to yourself, you will need the variable name to extract it's value later (123 in this case).
 
-Variable types:
+Predefined variable types:
 ```php
 *                    // Match all request URIs
 [i]                  // Match an integer
@@ -144,7 +144,7 @@ Each of those variable types results in a regex
 It is possible to register your custom variable types to router if you wish to match a specific pattern. More on this in the chapter 'Hooking in to the router'.
 
 ### Reading url variables
-Okay so we can use several variables, convenient! How to read this? Easy! The variables which be passed into your function as an array. See the example below.
+Okay so we can use several variables, convenient! How to read this? Easy! The variables which be passed into your function as an ``Swift\Router\RouteParameterBag``. See the example below.
 ```php
     /**
      * @param RouteParameter[] $params
@@ -157,16 +157,16 @@ Okay so we can use several variables, convenient! How to read this? Easy! The va
 
         $article_id = $params->get('article_id')->getValue();
 
-        return new JsonResponse(array(
+        return new JsonResponse( [
             'article_id' => $article_id,
             'title' => 'Foo Bar',
-        ));
+        ] );
     }
 ```
 See how the variable name comes in to play now? See [`Swift\Router\RouteParameter`](https://github.com/HenrivantSant/swift/blob/master/src/Router/RouteParameter.php)
 
 ## Responses
-A controller action must always return a [`Swift\HTTPFoundation\ResponseInterface`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/ResponseInterface.php) instance. This will output the given payload as JSON. You can easily add different Responses as long as they extend from `Swift\HTTPFoundation\Response`, or make one from scratch. As long as implements the inferface all is good. There some defaults at your disposal:
+A controller action must always return a [`Swift\HTTPFoundation\ResponseInterface`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/ResponseInterface.php) instance. This will output the given payload as JSON. You can easily add different Responses as long as they extend from `Swift\HTTPFoundation\Response`, or make one from scratch. As long as it implements the interface all is good. There are some defaults at your disposal:
 - [`Swift\HttpFoundation\Response`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/Response.php)
 - [`Swift\HttpFoundation\JsonResponse`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/JsonResponse.php)
 - [`Swift\HttpFoundation\RedirectResponse`](https://github.com/HenrivantSant/swift/blob/master/src/HttpFoundation/RedirectResponse.php)
@@ -179,7 +179,7 @@ The above controller called with 'foo/bar/3' with HTTP GET would return:
     "title": "Foo Bar"
 }
 ```
-In the real world you would ofcourse fetch some data or execute certain logic.
+In the real world you would likely fetch some data or execute certain logic.
 
 ### Exceptions 
 For some 'simple' responses it's not necessary to give a response. You can simply throw an Exception and the system will catch it, and deal with it accordingly. Those are available right now:

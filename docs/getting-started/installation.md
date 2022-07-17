@@ -16,7 +16,7 @@ After running a new directory is created. Type `cd project_name` in your termina
 Make sure to fill out login detail to a database in /etc/config/database.yaml.
 ```yaml
 connection:
-    driver: mysqli
+    driver: mysql
     host: localhost
     username: root
     password: ''
@@ -26,7 +26,7 @@ connection:
 ```
 Init the database by running in your terminal from the root of the project.
 ```shell
-php bin/console database:entities:update
+php bin/console orm:sync
 ```
 
 ### Setup app details
@@ -62,7 +62,7 @@ See https://github.com/SwiftAPI/swift-starter as a reference for setting the rig
 Make sure to fill out login detail to a database in /etc/config/database.yaml
 ```yaml
 connection:
-    driver: mysqli
+    driver: mysql
     host: localhost
     username: root
     password: ''
@@ -72,7 +72,7 @@ connection:
 ```
 Init the database by running
 ```shell
-php bin/console database:entities:update
+php bin/console orm:sync
 ```
 
 ### Setup app details

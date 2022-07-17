@@ -13,10 +13,10 @@ It's requires a small setup to get to command line running. If you set up using 
 <?php declare(strict_types=1);
 require dirname(__DIR__, 1) . '/vendor/autoload.php';
 
-use Swift\Console\CLIApplication;
+use Swift\Console\CliApplication;
 
-$CLIApplication = new CLIApplication();
-$CLIApplication->run();
+$CliApplication = new CliApplication();
+$CliApplication->run();
 ```
 This should be all. Open your command line in the root of the project and run ``php bin/console list``.
 
@@ -84,7 +84,11 @@ The system comes with a batch of useful commands. Get a list of all available co
 
 This should look something like this:
 ```shell
-$ php bin/console list
+$ php bin/console foo:bar
+Foo bar
+
+Buro26-Henri@DESKTOP-F8V939M MSYS /c/Buro26/www/swift-helloworld
+$ php bin/console
 
 
  ________  ___       __   ___  ________ _________
@@ -107,29 +111,42 @@ Options:
   -h, --help            Display help for the given command. When no command is given display help for the list command
   -q, --quiet           Do not output any message
   -V, --version         Display this application version
-      --ansi            Force ANSI output
-      --no-ansi         Disable ANSI output
+      --ansi|--no-ansi  Force (or disable --no-ansi) ANSI output
   -n, --no-interaction  Do not ask any interactive question
-  -t, --track-timing    Track and report execution time of command
+  -t, --track-time      Track and report execution time of command
   -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 
 Available commands:
-  help                      Display help for a command
-  list                      List commands
+  completion              Dump the shell completion script
+  help                    Display help for a command
+  list                    List commands
+ app
+  app:mode:set            Set current application mode
+  app:mode:show           Show current application mode
+ cache
+  cache:flush             Clear all caches
+  cache:list              List all caches
  config
-  config:get                Get a setting value
- database
-  database:entities:update  Update all tables by their entities
-  database:entity:update    Update a table from an entity
-  database:table:create     Create a table
+  config:get              Get a setting value
+ cron
+  cron:run                Starts the event runner.
+ dbal
+  dbal:list               Get list of available databases, their tables and records count
+  dbal:table              Describe table schema of specific database
+ debug
+  debug:container         Display current services for the application
  events
-  events:list:all           List available event(s)
-  events:list:single        Display event data
+  events:list:all         List available event(s)
+  events:list:single      Display event data
  graphql
-  graphql:schema:dump       Dump graphql schema in type language
+  graphql:schema:dump     Dump graphql schema in type language
+ orm
+  orm:list                List of all available entities and their tables
+  orm:sync                Sync ORM schema with database (generate tables)
+  orm:update              Show updates for ORM schema based on entity and relation annotations
  routing
-  routing:list              List all or any available route(s)
+  routing:list            List all or any available route(s)
  security
   security:client:create
-  security:client:get       Get client by name
+  security:client:get     Get client by name
 ```

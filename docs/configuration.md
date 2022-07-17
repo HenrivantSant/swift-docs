@@ -2,9 +2,9 @@
 title: Configuration
 ---
 
-The system uses [Yaml](https://yaml.org/) for configuration.
+The system uses [Yaml](https://yaml.org/) files for configuration.
 ## Basic setup
-The basic app configuration setup is as below. Place these yaml files in the etc/config/ directory of your project. The configuration comes with three configuration files which are necessary. Security (security.yaml) will be preset for you and you don't need to change anything here if there's no need.
+The basic app configuration setup is as below. Place these yaml files in the etc/config/ directory of your project. The configuration comes with four configuration files which are necessary. Security (security.yaml), Runtime (runtime.yaml) will be preset for you and you don't need to change anything here if there's no need.
 
 #### app.yaml
 ```yaml
@@ -73,6 +73,27 @@ access_decision_manager:
   allow_if_all_abstain: false
 
 access_control:
+
+graphql_access_control:
+```
+#### runtime.yaml
+For more on the actual working of this, see the Runtime component.
+```yaml
+runtime:
+  enabled: true
+coroutines:
+  enabled: true
+  run_in_background: true
+cron:
+  enabled: true
+  run_in_background: true
+file_watcher:
+  enabled: true
+  watch: [app, etc/config]
+  extensions: [php, yaml]
+  ignore: [tests]
+websocket:
+  port: 8000
 ```
 
 ## Configuration scopes
@@ -122,4 +143,45 @@ Writing the configuration works in the exact same matter. Note that is not possi
 ```php
 // Write to the previous foo.bar example
 $this->configuration->set('foo.bar', 'writing example', 'app/Foo');
+```
+
+### Writing configuration to the file system
+Note that writing the configuration as above will not write the configuration to the file system right away. This is because the configuration is cached in memory. Only when the Kernel is shutting down, the configuration be written to the file system. Therefore, it's important to correctly terminate the application.
+
+## Extending the core configuration (Configuration Sub Scopes)
+It is possible to extend the core configuration. This is done by creating a new configuration scope. The scope name is the name of the configuration sub scope. The configuration sub scope is a sub scope of the core configuration. This is useful when extending the core functionality. To create a new configuration sub scope, you need to create a new class that implements the `Swift\Configuration\ConfigurationSubScopeInterface`. See the example below. This way we can inject additional configuration into the existing core configuration.
+```php
+<?php declare( strict_types=1 );
+
+namespace Swift\GraphQl\Configuration;
+
+
+class AppConfiguration implements \Swift\Configuration\ConfigurationSubScopeInterface {
+    
+    public function getScope(): array {
+        return [ 'app', 'root' ];
+    }
+    
+    public function getConfigTreeBuilder( \Symfony\Component\Config\Definition\Builder\NodeBuilder $builder ):  \Symfony\Component\Config\Definition\Builder\NodeBuilder {
+        $builder
+            ->arrayNode('graphql')
+                ->children()
+                    ->booleanNode('enabled')->defaultTrue()->end()
+                    ->booleanNode('enable_introspection')->defaultTrue()->end()
+                ->end()
+            ->end();
+        
+        return $builder;
+    }
+    
+    public function getDefaultValues(): array {
+        return [
+            'graphql' => [
+                'enabled'              => true,
+                'enable_introspection' => true,
+            ],
+        ];
+    }
+    
+}
 ```

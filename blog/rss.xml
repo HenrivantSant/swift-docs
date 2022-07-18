@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
     <channel>
-        <title>Swift PHP Framework Blog</title>
+        <title>Swift API Framework Blog</title>
         <link>https://swiftapi.github.io/blog</link>
-        <description>Swift PHP Framework Blog</description>
+        <description>Swift API Framework Blog</description>
         <lastBuildDate>Thu, 30 May 2019 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>

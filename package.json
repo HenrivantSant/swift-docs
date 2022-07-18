@@ -19,7 +19,7 @@
       "other-project"
     ],
     "nohoist": [
-      "*/@docusaurus/*"
+      "**/html-minifier-terser"
     ]
   },
   "dependencies": {

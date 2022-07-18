@@ -94,9 +94,11 @@ module.exports = {
             label: 'Runtime',
             items: [
                 'runtime/introduction',
+                'runtime/configuration',
                 'runtime/cron',
                 'runtime/coroutines',
-                'runtime/websocket',
+                'runtime/websockets',
+                'runtime/filewatcher',
             ],
         },
     ],

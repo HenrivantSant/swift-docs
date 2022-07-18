@@ -13,3 +13,12 @@ By default this implementation is declarative and code first. This means that yo
 ### Default generated schema
 By default Swift will generate Queries and Mutations for all entities. It will generate a query to fetch a single entity by ID and and query to fetch a list (Connection) of entities. It will also generate mutations to create, update and delete entities.
 
+- [Configuration](/swift-docs/docs/graphql/configuration)
+- [Generators](/swift-docs/docs/graphql/generators)
+- [Builder](/swift-docs/docs/graphql/builder)
+- [Middleware](/swift-docs/docs/graphql/middleware)
+- [Resolvers](/swift-docs/docs/graphql/resolvers)
+- [Schema](/swift-docs/docs/graphql/schema)
+- [Tools](/swift-docs/docs/graphql/tools)
+- [Relay](/swift-docs/docs/graphql/relay)
+- [Security](/swift-docs/docs/graphql/security)

@@ -17,3 +17,5 @@ This framework is not intended for building websites or big applications. The pu
 - Logging service
 - CDN
 - etc.
+
+[Let's get started](/swift-docs/docs/getting-started/installation)

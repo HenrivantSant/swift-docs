@@ -81,7 +81,7 @@ module.exports = {
                     sidebarPath: require.resolve('./sidebars.js'),
                     // Please change this to your repo.
                     editUrl:
-                        'https://github.com/SwiftAPI/swift-docs/tree/master',
+                        'https://github.com/SwiftAPI/swift-docs/tree/main',
                 },
                 blog: {
                     showReadingTime: true,

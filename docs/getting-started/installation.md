@@ -46,8 +46,8 @@ From here you can rename the references from MyApp to your own namespace and get
 3. Rename in app/config.yaml
 4. Rename namespace of the HelloWorld controller or remove it
 
-## Option 2: Manual install
-This one quite a bit harder and not recommended, however it is possible.
+## Option 2: Manual installation
+This a bit harder and not recommended, however it is totally possible.
 
 ### Install
 Get it from Composer https://packagist.org/packages/swift-api/swift. Only do this if you're quite familiar with Swift.

@@ -36,7 +36,7 @@ Fill out /etc/config/app.yaml. Make sure to add the right baseurl, otherwise rou
 Visit your site site _app-domain_/hello-world and you should get the following response
 ```json
 {
-    "message": "Hey legend! Let's get started at https://henrivantsant.github.io/swift-docs/"
+    "message": "Hey legend! Let's get started at https://swiftapi.github.io/swift-docs/"
 }
 ```
 

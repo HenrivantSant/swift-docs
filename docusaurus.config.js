@@ -23,7 +23,7 @@ module.exports = {
                     label: 'Docs',
                     position: 'left',
                 },
-                {to: 'blog', label: 'Blog', position: 'left'},
+                //{to: 'blog', label: 'Blog', position: 'left'},
                 {to: 'next', label: 'Next', position: 'left'},
                 {
                     href: 'https://github.com/SwiftAPI/swift',

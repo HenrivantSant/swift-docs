@@ -26,15 +26,15 @@ module.exports = {
         },
         {
             type: 'category',
-            label: 'Database layer',
+            label: 'Database',
             items: [
                 'database/introduction',
                 'database/basics',
+                'database/cli',
                 'database/entities',
                 'database/relations',
                 'database/entity-behaviors',
                 'database/lifecycles',
-                'database/columns-properties',
                 'database/driver',
             ],
         },

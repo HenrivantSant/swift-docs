@@ -20,6 +20,15 @@ class Movie extends AbstractEntity {
 }
 ```
 
+### Sync schema with database
+Changes in Entity classes will NOT automatically be reflected in the database. You will need to run the command below to sync the schema with the database.
+
+```bash
+php bin/console orm:sync
+```
+
+> Note: This won't work as expected in production. Never change such things in production mode. Always update in develop mode.
+
 ## Fields
 
 Entities are not valid without having declared fields. Fields are the columns in the database. To declare a field, you need to use the `Swift\Orm\Attributes\Field`.

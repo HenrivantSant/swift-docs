@@ -99,3 +99,13 @@ Extending a field is done by all `extendType( string $name, \Closure $closure )`
 For GraphQl Resolver to work it is important to refer the Core GraphQl type as type to use. Those will only be available after the Schema is compiled. Another option is that the type you're referring to is not yet defined in the building phase. There it is always possible (like in the example above) to lazily refer to types with a Closure. This Closure will only be called when the type is needed in the Resolver. This is where the Registry comes in handy.
 
 The Registry has a static property `$typeMap` that contains all types that are defined in the Schema. This property is used to refer to types that are not yet defined in the building phase, but will be after compilation.
+
+```php
+$token = $this->createTokenType( $registry );
+        
+$response = Builder::objectType( 'UserLoginResult' )
+                   ->addField( 'user', static fn() => Registry::$typeMap[ 'SecurityUser' ] )
+                   ->addField( 'token', static fn() => Registry::$typeMap[ $token->getName() ] );
+
+$registry->objectType( $response );
+```

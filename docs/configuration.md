@@ -2,7 +2,8 @@
 title: Configuration
 ---
 
-The system uses [Yaml](https://yaml.org/) files for configuration.
+All configuration is defined in [Yaml](https://yaml.org/) files. The core configuration is stored in the `/etc/config/` folder. Your application's configuration is stored in the `/app/` folder, or in specified subfolders.
+
 ## Basic setup
 The basic app configuration setup is as below. Place these yaml files in the etc/config/ directory of your project. The configuration comes with four configuration files which are necessary. Security (security.yaml), Runtime (runtime.yaml) will be preset for you and you don't need to change anything here if there's no need.
 
@@ -42,7 +43,8 @@ logging:
 For more on the actual working of this, see the Database component.
 ```yaml
 connection:
-  driver: mysqli
+  driver: mysql
+  engine: InnoDB
   host: localhost
   username: root
   password: ''
@@ -89,7 +91,7 @@ cron:
   run_in_background: true
 file_watcher:
   enabled: true
-  watch: [app, etc/config]
+  watch: [services.yaml, app, etc/config]
   extensions: [php, yaml]
   ignore: [tests]
 websocket:

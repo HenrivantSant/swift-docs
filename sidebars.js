@@ -9,12 +9,13 @@ module.exports = {
             ]
         },
         {
-            type: 'doc',
-            id: 'application-lifecycle',
-        },
-        {
-            type: 'doc',
-            id: 'attributes',
+            type: 'category',
+            label: 'Architecture',
+            items: [
+                'architecture/introduction',
+                'architecture/application-lifecycle',
+                'architecture/attributes',
+            ],
         },
         {
             type: 'doc',

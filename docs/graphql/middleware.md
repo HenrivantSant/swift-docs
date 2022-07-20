@@ -103,3 +103,15 @@ class NodeMiddleware implements \Swift\GraphQl\Executor\Middleware\ResolverMiddl
 
 ## Advanced usage
 Note that calling the $next() function executes the rest of the middleware chain. It is possible to modify the output of your middleware by calling the $next() function, modifying its result and returning it.
+
+```php
+public function process( mixed $objectValue, mixed $args, mixed $context, ResolveInfo $info, ?callable $next = null ): mixed {
+    // Possibly do something
+    
+    $resolvedValue = $next( $objectValue, $args, $context, $info );
+    
+    // Do something with the resolved value
+    
+    return $resolvedValue;
+} 
+```

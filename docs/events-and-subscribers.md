@@ -5,7 +5,7 @@ title: Events, Subscribers & Listeners
 Under the hood the [Symfony Event Dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html) is used, however there is a custom implementation on the Event Dispatcher. This is in order to provide future stability and to enable the system for adding functionality in to the event system.
 
 
-## Subscriber or listening to events
+## Subscribing or listening to events
 You can choose to subscribe to (multiple) events by using an EventSubscriber. An EventSubscriber has to return an array of the events it desires to listen (subscribe) to. An EventListener on the other hand can mark a public method as a Listener for a specific event by annotating it with the ListenTo attribute (example below).
 
 ### Subscribing to events

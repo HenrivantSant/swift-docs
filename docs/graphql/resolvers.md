@@ -4,8 +4,31 @@ title: Resolvers
 
 In basis most types will be assigned a Resolver as a closure when being built. However sometimes you might want to separate the resolver from the type. This is possible using a Resolver class. This is a class that extends `Swift\GraphQl\Executor\Resolver\AbstractResolver`. This class comes with some useful Security features like you might be used to from REST Controllers.
 
-The example below resolves a Query named 'SayHello'. Resolvers are executed after the default defined resolvers and middleware, but before the directives. 
+The Resolver will be called after the default resolve and after the middleware. See the Core Resolver below for more information.
 
+## Usage
+The example below resolves a Query named 'SayHello'. Resolvers are executed after the default defined resolvers and middleware, but before the directives. 
+```php
+<?php declare( strict_types=1 );
+
+namespace Swift\GraphQl\Tests\Executor\Resolver;
+
+use GraphQL\Type\Definition\ResolveInfo;
+use Swift\GraphQl\Attributes\Resolve;
+
+class TestResolver extends \Swift\GraphQl\Executor\Resolver\AbstractResolver {
+    
+    #[Resolve( name: 'SayHello' )]
+    public function resolveSomething( $objectValue, $args, $context, ResolveInfo $info ): mixed {
+        // Resolve SayHello
+    
+        return $objectValue;
+    }
+    
+}
+```
+
+## Core Resolver
 See below the code for the Resolver to understand the flow.
 
 ```php

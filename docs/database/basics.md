@@ -2,7 +2,7 @@
 title: Basics
 ---
 
-Persisting entities is done using the `Swift\Orm\EntityManager`. 
+The schema of the database is declared in Data Object in the code. Those objects will be referred to as `Entities`. Retrieving (querying) and persisting entities is done using the `Swift\Orm\EntityManager`. 
 
 ## Create, update, and delete
 All persistence actions are done using the `Swift\Orm\EntityManager`.

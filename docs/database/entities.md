@@ -108,7 +108,7 @@ The following field types (Swift\Orm\Types\FieldTypes) are available. Field type
 | TIMESTAMP | Timestamp without a timezone, DBAL will automatically convert incoming values into UTC timezone. Do not use such column type in your objects to store time (use `datetime` instead) as timestamps will behave very specific to select DBMS. |
 | JSON      | To store JSON structures, such type usually mapped to "text", only Postgres support it natively.                                                                                                                                            |
 | BOOL      | Boolean type. Some database will store this value as integer 1/0.                                                                                                                                                                           |
-| UUID      | Story column as UUID type. Most DBMS will store this as text.                                                                                                                                                                               |
+| UUID      | Store column as UUID type. Most DBMS will store this as text.                                                                                                                                                                               |
 | ENUM      | Saves the cases of the enum as enum values in the DBMS.                                                                                                                                                                                     |
 
 ### Enums

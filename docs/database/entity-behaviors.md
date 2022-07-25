@@ -33,7 +33,7 @@ use Swift\Orm\Entity\AbstractEntity;
 #[Uuid1( field: 'uuid' )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -62,7 +62,7 @@ use Swift\Orm\Entity\AbstractEntity;
 #[Uuid1( field: 'uuid', node: '00000fffffff', clockSeq: 0xffff )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -96,7 +96,7 @@ use Swift\Orm\Entity\AbstractEntity;
 )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -128,7 +128,7 @@ use Swift\Orm\Entity\AbstractEntity;
 )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -155,7 +155,7 @@ use Swift\Orm\Entity\AbstractEntity;
 #[Uuid4( field: 'uuid' )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -187,7 +187,7 @@ use Swift\Orm\Entity\AbstractEntity;
 )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }
@@ -217,7 +217,7 @@ use Swift\Orm\Entity\AbstractEntity;
 )]
 class UserEntity extends AbstractEntity implements UserStorageInterface {
     
-    #[Field( name: 'uuid', type: FieldTypes::UUID, unique: true )]
+    #[Field( name: 'uuid', type: FieldTypes::UUID )]
     protected UuidInterface $uuid;
     
 }

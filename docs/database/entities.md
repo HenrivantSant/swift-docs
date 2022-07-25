@@ -180,13 +180,13 @@ use Swift\Orm\Types\FieldTypes;
 #[Embeddable]
 class Address extends AbstractEntity {
     
-    #[Field( name: 'country', type: FieldTypes::TEXT )]
+    #[Field( name: 'country', type: FieldTypes::STRING, length: 128 )]
     protected string $country;
     
-    #[Field( name: 'city', type: FieldTypes::TEXT, length: 32 )]
+    #[Field( name: 'city', type: FieldTypes::STRING, length: 32 )]
     protected string $city;
     
-    #[Field( name: 'address', type: FieldTypes::TEXT )]
+    #[Field( name: 'address', type: FieldTypes::STRING, length: 255 )]
     protected string $address;
     
 }
@@ -237,13 +237,13 @@ use Swift\Orm\Types\FieldTypes;
 #[Embeddable( prefix: 'address_' )]
 class Address extends AbstractEntity {
     
-    #[Field( name: 'country', type: FieldTypes::TEXT )]
+    #[Field( name: 'country', type: FieldTypes::STRING, length: 128 )]
     protected string $country;
     
     #[Field( name: 'city', type: FieldTypes::TEXT, length: 32 )]
     protected string $city;
     
-    #[Field( name: 'address', type: FieldTypes::TEXT )]
+    #[Field( name: 'address', type: FieldTypes::STRING, length: 255 )]
     protected string $address;
     
 }

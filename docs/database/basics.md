@@ -114,7 +114,7 @@ class Movie extends AbstractEntity {
     #[Field( name: 'id', primary: true, type: FieldTypes::INT, length: 11 )]
     protected int $id;
     
-    #[Field( name: 'title', unique: true, index: true )]
+    #[Field( name: 'title', type: FieldTypes::STRING, index: true, length: 128 )]
     protected string $title;
     
     /**
@@ -158,7 +158,7 @@ class Actor extends AbstractEntity {
     #[Field( name: 'id', primary: true, type: FieldTypes::INT )]
     protected int $id;
     
-    #[Field( name: 'name', type: FieldTypes::TEXT )]
+    #[Field( name: 'name', type: FieldTypes::STRING, length: 64 )]
     protected string $name;
 
     /**

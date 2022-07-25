@@ -4,9 +4,9 @@ title: Lifecycles
 
 Every entity has a lifecycle. The lifecycle is a series of events that are triggered during the life of the entity. The events are:
 
-- onCreate
-- onUpdate
-- onDelete
+- `onCreate`
+- `onUpdate`
+- `onDelete`
 
 It might be useful to undertake certain actions when an entity is created, updated, or deleted. The ORM provides a way to do this. It is called a lifecycle.
 

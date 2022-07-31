@@ -19,6 +19,10 @@ module.exports = {
         },
         {
             type: 'doc',
+            id: 'middleware',
+        },
+        {
+            type: 'doc',
             id: 'command-line-interface',
         },
         {

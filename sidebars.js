@@ -90,8 +90,9 @@ module.exports = {
                 'security/introduction',
                 'security/authentication',
                 'security/authorization',
-                'security/users',
                 'security/firewall',
+                'security/ratelimiter',
+                'security/users',
             ],
         },
         {

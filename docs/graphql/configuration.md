@@ -9,4 +9,6 @@ To disable schema introspection, set the `graphql.enable_introspection` to `fals
 graphql:
     enable: true
     enable_introspection: true
+    max_query_complexity: 120
+    max_query_depth: 10
 ```

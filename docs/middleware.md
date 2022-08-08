@@ -111,6 +111,9 @@ The `Swift\Kernel\Middleware\CorsMiddleware` intercepts any CORS preflight reque
 ### AuthMiddleware
 The `Swift\Security\Authentication\Kernel\Middleware\AuthMiddleware` is responsible for handling authentication. It has order - 10.
 
+### RateLimitingMiddleware
+The `Swift\Security\RateLimiter\Kernel\Middleware\RateLimitingMiddleware` is responsible for default rate limiting. It has order - 5.
+
 ### RequestLoggingMiddleware
 The `Swift\Kernel\Middleware\RequestLoggingMiddleware` logs all requests to the database if enabled. It has order 0.
 

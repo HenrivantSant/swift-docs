@@ -16,13 +16,13 @@ app:
   mode: develop
   # Enable/disable debug mode
   debug: true
-  # Allow cross origin requests (returns 200 response for OPTIONS Request if no Route is matched)
+  # Allow cross-origin requests (returns 200 response for OPTIONS Request if no Route is matched)
   allow_cors: true
   # Default application timezone
   timezone: Europe/Amsterdam
 
 routing:
-  # Base url used in route matching. This is also useful on sub domains
+  # Base url used in route matching. This is also useful on subdomains
   baseurl: foo.bar.com
 
 graphql:
@@ -30,6 +30,8 @@ graphql:
   enabled: true
   # Enable/disable introspection for graphql
   enable_introspection: true
+  max_query_complexity: 120
+  max_query_depth: 10
 
 logging:
   # Enable/disable mails for logger
@@ -74,9 +76,18 @@ access_decision_manager:
   strategy: Swift\Security\Authorization\Strategy\AffirmativeDecisionStrategy
   allow_if_all_abstain: false
 
-access_control:
-
 graphql_access_control:
+  - { name: SecurityUser, fields: [ lastname ], roles: [ ROLE_USER, ROLE_FOO ] }
+  - { name: SecurityUsersCredential, fields: [ ], roles: [ ROLE_USER, ROLE_FOO ] }
+
+rate_limit:
+  enabled: true
+  enable_default: true
+  default_limit: 10
+  default_period: 60
+  default_strategy: sliding_window
+  rates:
+    - { name: foo_bar, strategy: sliding_window, limit: 30, period: 60 }
 ```
 #### runtime.yaml
 For more on the actual working of this, see the Runtime component.

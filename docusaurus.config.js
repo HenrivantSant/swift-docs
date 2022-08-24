@@ -72,6 +72,11 @@ module.exports = {
         prism: {
             additionalLanguages: ['php', 'php-extras'],
         },
+        algolia: {
+            appId: 'YWHKNR9J2V',
+            apiKey: 'a529fccb4c857b8c2af69ea515c4f24f',
+            indexName: 'swift',
+        },
     },
     presets: [
         [
